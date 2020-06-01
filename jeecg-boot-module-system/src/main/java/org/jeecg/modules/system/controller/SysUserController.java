@@ -26,6 +26,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -89,7 +90,8 @@ public class SysUserController {
 
 	@Autowired
 	private RedisUtil redisUtil;
-
+    @Autowired
+    HttpServletRequest request;
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
 
@@ -105,6 +107,15 @@ public class SysUserController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+
+        String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
+        System.out.println(  "================youlan===  3333===================");
+        System.out.println( token  + "================youlan===  111===================");
+        SysUser loginUser = (SysUser)redisUtil.get(token);
+        System.out.println(loginUser.getUsername() + "====" + loginUser.getGsdm());
+        System.out.println(  "================youlan===  4444===================");
+
+
 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
 		QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
     	//TODO 外部模拟登陆临时账号，列表不显示
@@ -392,7 +403,7 @@ public class SysUserController {
      * 导出excel
      *
      * @param request
-     * @param response
+     * @param
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {

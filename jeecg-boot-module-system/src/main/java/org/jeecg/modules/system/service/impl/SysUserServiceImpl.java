@@ -22,6 +22,7 @@ import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
+import org.jeecg.modules.system.vo.SysUserQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -110,6 +111,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return false;
 	}
 
+    @Override
+    public SysUser gainUserByName(SysUserQueryVo sysUserQueryVo) {
+        return userMapper.gainUserByName(sysUserQueryVo);
+    }
 	@Override
 	public SysUser getUserByName(String username) {
 		return userMapper.getUserByName(username);

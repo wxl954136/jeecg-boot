@@ -109,5 +109,8 @@ public class LoginUser {
 	 * 座机号
 	 */
 	private String telephone;
-
+	/**
+	 * gsdm
+	 */
+	private String gsdm;
 }

@@ -26,8 +26,8 @@ import java.util.Objects;
 @Data
 @TableName("sys_depart")
 public class SysDepart implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
+	private static final long serialVersionUID = 1L;
+
 	/**ID*/
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;

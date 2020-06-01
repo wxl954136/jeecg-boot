@@ -9,6 +9,8 @@ import org.jeecg.modules.system.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.SysUserDepVo;
+import org.jeecg.modules.system.vo.SysUserQueryVo;
+
 
 import java.util.List;
 
@@ -21,6 +23,18 @@ import java.util.List;
  * @since 2018-12-20
  */
 public interface SysUserMapper extends BaseMapper<SysUser> {
+
+
+
+	/**
+	 * 悠蓝的必须使用Vo做为查询传递中介，因为要加Gsdm
+	 * 通过用户账号查询用户信息
+	 * @param
+	 * @return
+	 */
+	SysUser gainUserByName(@Param("sysUserQueryVo") SysUserQueryVo sysUserQueryVo);
+
+
 	/**
 	  * 通过用户账号查询用户信息
 	 * @param username
@@ -62,7 +76,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	 * 根据用户名设置部门ID
 	 * @param username
-	 * @param departId
+	 * @param orgCode
 	 */
 	void updateUserDepart(@Param("username") String username,@Param("orgCode") String orgCode);
 	

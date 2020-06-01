@@ -15,6 +15,7 @@ import org.jeecg.modules.system.entity.SysUser;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.vo.SysUserQueryVo;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -59,7 +60,10 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	public boolean deleteBatchUsers(String userIds);
-	
+
+	public SysUser gainUserByName(SysUserQueryVo sysUserQueryVo);
+
+
 	public SysUser getUserByName(String username);
 	
 	/**

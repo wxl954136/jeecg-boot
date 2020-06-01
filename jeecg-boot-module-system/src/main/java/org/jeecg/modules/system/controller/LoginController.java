@@ -25,6 +25,7 @@ import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.RandImageUtil;
+import org.jeecg.modules.system.vo.SysUserQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,15 +61,9 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
 		Result<JSONObject> result = new Result<JSONObject>();
+		String gsdm = sysLoginModel.getGsdm();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
-		System.out.println("youlan==username=" + username) ;
-		System.out.println("youlan==password=" + password) ;
-		System.out.println("youlan==CheckKey=" + sysLoginModel.getCheckKey()) ;
-		System.out.println("youlan==Captcha=" + sysLoginModel.getCaptcha()) ;
-
-
-
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 		//前端密码加密，后端进行密码解密
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
@@ -90,7 +85,9 @@ public class LoginController {
 		//update-end-author:taoyan date:20190828 for:校验验证码
 		
 		//1. 校验用户是否有效
-		SysUser sysUser = sysUserService.getUserByName(username);
+//		SysUser sysUser = sysUserService.getUserByName(username);
+
+		SysUser sysUser = sysUserService.gainUserByName(new SysUserQueryVo(username,gsdm));
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
@@ -341,14 +338,21 @@ public class LoginController {
 	 * @return
 	 */
 	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
+		System.out.println("c============youlan=====" + sysUser.getGsdm());
+		String gsdm = sysUser.getGsdm();
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
 		// 生成token
-		String token = JwtUtil.sign(username, syspassword);
+		String token = JwtUtil.sign( username, syspassword);
         // 设置token缓存有效时间
+
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		//token中放用户登录信息，便于取值
+		redisUtil.set(token,sysUser);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 
+		System.out.println("youlan ========这里放Redis信息======9991  " + token);
+		System.out.println("youlan ==============9992  " + CommonConstant.PREFIX_USER_TOKEN + token);
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject();
 		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
@@ -361,6 +365,7 @@ public class LoginController {
 		} else {
 			obj.put("multi_depart", 2);
 		}
+
 		obj.put("token", token);
 		obj.put("userInfo", sysUser);
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());

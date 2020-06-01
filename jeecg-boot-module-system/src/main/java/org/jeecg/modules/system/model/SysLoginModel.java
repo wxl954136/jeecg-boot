@@ -11,6 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(value="登录对象", description="登录对象")
 public class SysLoginModel {
+
+    @ApiModelProperty(value = "公司代码")
+    private String gsdm;
 	@ApiModelProperty(value = "账号")
     private String username;
 	@ApiModelProperty(value = "密码")
@@ -51,5 +54,12 @@ public class SysLoginModel {
 	public void setCheckKey(String checkKey) {
 		this.checkKey = checkKey;
 	}
-    
+
+    public String getGsdm() {
+        return gsdm;
+    }
+
+    public void setGsdm(String gsdm) {
+        this.gsdm = gsdm;
+    }
 }
