@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.trader.mapper.SysTraderMapper">
+    <!-- 根据用户名查询 -->
+    <select id="getTraderList" parameterType="Object" resultType="org.jeecg.modules.system.trader.entity.SysTrader">
+		select * from  sys_trader
+		where gsdm = #{sysTrader.gsdm}
+		and del_flag = 0
+	</select>
+</mapper>

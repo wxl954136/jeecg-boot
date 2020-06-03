@@ -763,9 +763,12 @@ public class QueryGenerator {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
 				}
 				String filedSql = getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(name), value,isString);
+				System.out.println("x=========" + filedSql);
 				sb.append(sql_and+filedSql);
 			}
 		}
+		System.out.println("1=========" + sql_and);
+
 		log.info("query auth sql is:"+sb.toString());
 		return sb.toString();
 	}
@@ -819,6 +822,7 @@ public class QueryGenerator {
 			SysPermissionDataRuleModel dataRule = ruleMap.get(c);
 			String ruleValue = dataRule.getRuleValue();
 			if(oConvertUtils.isEmpty(ruleValue)){
+
 				continue;
 			}
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
