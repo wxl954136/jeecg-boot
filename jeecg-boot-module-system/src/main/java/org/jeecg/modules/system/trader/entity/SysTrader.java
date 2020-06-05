@@ -60,7 +60,7 @@ public class SysTrader implements Serializable {
     private String name;
 	/**供应商*/
 	@Excel(name = "供应商", width = 15, dicCode = "sys_confirm_status")
-	@Dict(dicCode = "sys_confirm_status")
+    @Dict(dicCode = "sys_confirm_status")
     @ApiModelProperty(value = "供应商")
     private String salerFlag;
 	/**客户*/

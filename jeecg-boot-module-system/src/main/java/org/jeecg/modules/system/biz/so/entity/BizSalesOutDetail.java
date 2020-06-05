@@ -1,4 +1,4 @@
-package org.jeecg.modules.system.biz.po.entity;
+package org.jeecg.modules.system.biz.so.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -14,15 +14,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @Description: 采购入库明细表
+ * @Description: 销售明细表
  * @Author: jeecg-boot
- * @Date:   2020-06-02
+ * @Date:   2020-06-04
  * @Version: V1.0
  */
-@ApiModel(value="biz_purchase_in对象", description="采购信息主表")
+@ApiModel(value="biz_sales_out对象", description="销售主表")
 @Data
-@TableName("biz_purchase_in_detail")
-public class BizPurchaseInDetail implements Serializable {
+@TableName("biz_sales_out_detail")
+public class BizSalesOutDetail implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
@@ -45,16 +45,16 @@ public class BizPurchaseInDetail implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "更新日期")
 	private Date updateTime;
-	/**业务类型*/
-	@Excel(name = "业务类型", width = 15)
-	@ApiModelProperty(value = "业务类型")
-	private String bizType;
 	/**所属部门*/
 	@ApiModelProperty(value = "所属部门")
 	private String sysOrgCode;
-	/**头表id*/
-	@ApiModelProperty(value = "头表id")
-	private String headId;
+	/**头表关联*/
+	@ApiModelProperty(value = "头表关联")
+	private String headid;
+	/**单据类型*/
+	@Excel(name = "单据类型", width = 15)
+	@ApiModelProperty(value = "单据类型")
+	private String bizType;
 	/**商品名称*/
 	@Excel(name = "商品名称", width = 15, dictTable = "sys_sku", dicText = "full_name", dicCode = "id")
 	@Dict(dictTable = "sys_sku", dicText = "full_name", dicCode = "id")
@@ -64,9 +64,9 @@ public class BizPurchaseInDetail implements Serializable {
 	@Excel(name = "数量", width = 15)
 	@ApiModelProperty(value = "数量")
 	private java.math.BigDecimal qty;
-	/**单价*/
-	@Excel(name = "单价", width = 15)
-	@ApiModelProperty(value = "单价")
+	/**价格*/
+	@Excel(name = "价格", width = 15)
+	@ApiModelProperty(value = "价格")
 	private java.math.BigDecimal price;
 	/**税率*/
 	@Excel(name = "税率", width = 15)
@@ -80,10 +80,6 @@ public class BizPurchaseInDetail implements Serializable {
 	@Excel(name = "乐观锁", width = 15)
 	@ApiModelProperty(value = "乐观锁")
 	private Integer updateCount;
-	/**删除标记*/
-	@Excel(name = "删除标记", width = 15)
-	@ApiModelProperty(value = "删除标记")
-	private String delFlag;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")

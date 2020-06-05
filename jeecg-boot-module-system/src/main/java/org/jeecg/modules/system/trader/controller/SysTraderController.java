@@ -131,6 +131,7 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	@ApiOperation(value="往来单位-通过id查询", notes="往来单位-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
+		System.out.println("xc===youlan================" + id);
 		SysTrader sysTrader = sysTraderService.getById(id);
 		if(sysTrader==null) {
 			return Result.error("未找到对应数据");
