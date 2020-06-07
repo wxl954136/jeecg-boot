@@ -20,13 +20,17 @@ public enum  SysStatusEnum {
     SYS_RECEIVABLE_DEBT("应收款","1"),
 
 
-    BIZ_PO_IN("采购入库单","CGRK"),
-    BIZ_SALES_IN("销售单","XSD"),
+    NOTE_PO_IN("采购入库单","CGRK"),
+    NOTE_SALES_IN("销售单","XSD"),
+
+    NOTE_PAYABLE("应付款","YFK"),
+    NOTE_RECEIVABLE("应收款","YSK"),
+
+    NOTE_SOURCE_AUTO("单据来源-系统自动产生","AUTO"),
+    NOTE_SOURCE_SYS("单据来源-系统","SYS"),
 
 
-
-    CLOSED("交易关闭", "TRADE_CLOSED");
-
+    NOTE_NEW("新单据", "NEW");
 
 
     private String value;
