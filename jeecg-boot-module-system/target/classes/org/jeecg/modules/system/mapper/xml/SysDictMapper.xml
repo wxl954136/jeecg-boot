@@ -46,11 +46,17 @@
 	<!-- 重复校验 sql语句 -->
 	<select id="duplicateCheckCountSql" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
 		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId}
+		<if test="fieldGsdm != null and fieldGsdmVal != ''">
+			and ${fieldGsdm} = #{fieldGsdmVal}
+		</if>
 	</select>
 	
 	<!-- 重复校验 sql语句 -->
 	<select id="duplicateCheckCountSqlNoDataId" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
 		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal}
+		<if test="fieldGsdm != null and fieldGsdmVal != ''">
+			and ${fieldGsdm} = #{fieldGsdmVal}
+		</if>
 	</select>
 		
 	<!-- 查询部门信息 作为字典数据 -->
