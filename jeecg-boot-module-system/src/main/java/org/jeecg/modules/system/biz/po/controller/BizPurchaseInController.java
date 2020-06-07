@@ -12,6 +12,12 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.util.RedisUtil;
+import org.jeecg.modules.shiro.vo.DefContants;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.utils.SysStatusEnum;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,7 +63,12 @@ public class BizPurchaseInController {
 	private IBizPurchaseInService bizPurchaseInService;
 	@Autowired
 	private IBizPurchaseInDetailService bizPurchaseInDetailService;
-	
+
+	 @Autowired
+	 HttpServletRequest request;
+	 @Autowired
+	 private RedisUtil redisUtil;
+
 	/**
 	 * 分页列表查询
 	 *
@@ -74,6 +85,11 @@ public class BizPurchaseInController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+
+		String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
+		SysUser loginUser = (SysUser)redisUtil.get(token);
+		System.out.println(loginUser.getUsername() + "====" + loginUser.getGsdm());
+
 		QueryWrapper<BizPurchaseIn> queryWrapper = QueryGenerator.initQueryWrapper(bizPurchaseIn, req.getParameterMap());
 		Page<BizPurchaseIn> page = new Page<BizPurchaseIn>(pageNo, pageSize);
 		IPage<BizPurchaseIn> pageList = bizPurchaseInService.page(page, queryWrapper);
@@ -90,6 +106,11 @@ public class BizPurchaseInController {
 	@ApiOperation(value="采购信息主表-添加", notes="采购信息主表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody BizPurchaseInPage bizPurchaseInPage) {
+
+		if (SysUtils.izNewNote(bizPurchaseInPage.getBizNo()))
+		{
+
+		}
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
 		bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());

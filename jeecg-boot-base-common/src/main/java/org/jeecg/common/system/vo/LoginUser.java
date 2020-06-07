@@ -32,7 +32,10 @@ public class LoginUser {
 	 * 登录人账号
 	 */
 	private String username;
-
+	/**
+	 * 登录人账号
+	 */
+	private String usersign;
 	/**
 	 * 登录人名字
 	 */

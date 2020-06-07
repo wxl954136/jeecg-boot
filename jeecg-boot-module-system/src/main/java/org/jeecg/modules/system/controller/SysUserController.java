@@ -33,6 +33,7 @@ import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.vo.SysDepartUsersVO;
 import org.jeecg.modules.system.vo.SysUserRoleVO;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -146,14 +147,25 @@ public class SysUserController {
 		Result<SysUser> result = new Result<SysUser>();
 		String selectedRoles = jsonObject.getString("selectedroles");
 		String selectedDeparts = jsonObject.getString("selecteddeparts");
+
+
 		try {
+
+            String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
+            SysUser loginUser = (SysUser)redisUtil.get(token);
+            String gsdm = loginUser.getGsdm();
+
 			SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
+            user.setUsername(SysUtils.getUsername(gsdm,user.getUsersign()));
 			user.setCreateTime(new Date());//设置创建时间
 			String salt = oConvertUtils.randomGen(8);
 			user.setSalt(salt);
 			String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), salt);
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
+			user.setGsdm(gsdm);
+			//新增用户时，注意设置初始值 ，所有的以这个为准，该字段不给用户展示 ，内部处理
+
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
 			sysUserService.addUserWithRole(user, selectedRoles);
             sysUserService.addUserWithDepart(user, selectedDeparts);
@@ -177,6 +189,7 @@ public class SysUserController {
 				result.error500("未找到对应实体");
 			}else {
 				SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
+                System.out.println("y===============" +user.getUpdateBy() );
 				user.setUpdateTime(new Date());
 				//String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), sysUser.getSalt());
 				user.setPassword(sysUser.getPassword());
@@ -356,7 +369,6 @@ public class SysUserController {
     @RequestMapping(value = "/generateUserId", method = RequestMethod.GET)
     public Result<String> generateUserId() {
         Result<String> result = new Result<>();
-        System.out.println("我执行了,生成用户ID==============================");
         String userId = UUID.randomUUID().toString().replace("-", "");
         result.setSuccess(true);
         result.setResult(userId);

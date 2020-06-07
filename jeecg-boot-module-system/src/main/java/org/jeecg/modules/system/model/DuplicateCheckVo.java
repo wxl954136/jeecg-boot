@@ -34,7 +34,13 @@ public class DuplicateCheckVo implements Serializable {
 	 */
 	@ApiModelProperty(value="字段值",name="fieldVal",example="1000")
 	private String fieldVal;
-	
+
+	@ApiModelProperty(value="公司代码字段名称",name="fieldGsdm",example="1000")
+	private String fieldGsdm;
+
+	@ApiModelProperty(value="公司代码结果值",name="fieldGsdmVal",example="1000")
+	private String fieldGsdmVal;
+
 	/**
 	 * 数据ID
 	*/

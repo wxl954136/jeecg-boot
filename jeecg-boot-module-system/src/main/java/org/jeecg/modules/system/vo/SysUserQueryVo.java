@@ -14,6 +14,7 @@ public class SysUserQueryVo {
     private String username;
     private String password;
     private String gsdm;
+    private String userfullname;
     public SysUserQueryVo(){
 
     }

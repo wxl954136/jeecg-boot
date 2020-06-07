@@ -135,7 +135,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		BeanUtils.copyProperties(sysUser, loginUser);
 		return loginUser;
 	}
-	
+
 	@Override
 	public LoginUser getUserById(String id) {
 		if(oConvertUtils.isEmpty(id)) {

@@ -43,8 +43,13 @@ public class SysUser implements Serializable {
     /**
      * 登录账号
      */
-    @Excel(name = "登录账号", width = 15)
     private String username;
+
+    /**
+     * 登录账号
+     */
+    @Excel(name = "真实显示的用户", width = 15)
+    private String usersign;
 
     /**
      * 真实姓名

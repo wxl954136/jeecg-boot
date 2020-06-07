@@ -65,6 +65,8 @@ public interface ISysUserService extends IService<SysUser> {
 
 
 	public SysUser getUserByName(String username);
+
+
 	
 	/**
 	 * 添加用户和用户角色关系

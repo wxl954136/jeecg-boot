@@ -1,11 +1,13 @@
 package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.saxon.lib.SaxonOutputKeys;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
@@ -26,6 +28,7 @@ import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.jeecg.modules.system.vo.SysUserQueryVo;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +67,9 @@ public class LoginController {
 		String gsdm = sysLoginModel.getGsdm();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
+		username = SysUtils.getUsername(gsdm,username); //把username转成唯一带公司代码的
+		System.out.println("login：============" + username);
+
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 		//前端密码加密，后端进行密码解密
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
@@ -75,6 +81,7 @@ public class LoginController {
             result.error500("验证码无效");
             return result;
         }
+
         String lowerCaseCaptcha = captcha.toLowerCase();
 		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
 		Object checkCode = redisUtil.get(realKey);
@@ -82,17 +89,20 @@ public class LoginController {
 			result.error500("验证码错误");
 			return result;
 		}
-		//update-end-author:taoyan date:20190828 for:校验验证码
-		
-		//1. 校验用户是否有效
-//		SysUser sysUser = sysUserService.getUserByName(username);
 
-		SysUser sysUser = sysUserService.gainUserByName(new SysUserQueryVo(username,gsdm));
+		//update-end-author:taoyan date:20190828 for:校验验证码
+
+		//1. 校验用户是否有效
+		SysUser sysUser = sysUserService.getUserByName(username);
+//		SysUser sysUser = sysUserService.gainUserByName(new SysUserQueryVo(username,gsdm));
+
+
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
-		
+
+		System.out.println("x=========" + sysUser.getSalt());
 		//2. 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
@@ -100,7 +110,7 @@ public class LoginController {
 			result.error500("用户名或密码错误");
 			return result;
 		}
-				
+
 		//用户登录信息
 		userInfo(sysUser, result);
 		sysBaseAPI.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
@@ -338,7 +348,6 @@ public class LoginController {
 	 * @return
 	 */
 	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
-		System.out.println("c============youlan=====" + sysUser.getGsdm());
 		String gsdm = sysUser.getGsdm();
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
@@ -347,7 +356,7 @@ public class LoginController {
         // 设置token缓存有效时间
 
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		//token中放用户登录信息，便于取值
+		//token中放用户登录信息，便于取值 youlan，在token中放置信息
 		redisUtil.set(token,sysUser);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 

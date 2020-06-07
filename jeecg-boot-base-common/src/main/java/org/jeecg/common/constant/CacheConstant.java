@@ -26,6 +26,7 @@ public interface CacheConstant {
 	 */
 	public static final String SYS_USERS_CACHE = "sys:cache:user";
 
+
 	/**
 	 * 全部部门信息缓存
 	 */

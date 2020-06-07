@@ -2,10 +2,14 @@ package org.jeecg.modules.system.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.netty.util.internal.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.util.RedisUtil;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +35,8 @@ public class DuplicateCheckController {
 	@Autowired
 	SysDictMapper sysDictMapper;
 
+	@Autowired
+	RedisUtil redisUtil;
 	/**
 	 * 校验数据是否在系统中是否存在
 	 * 
@@ -40,6 +46,11 @@ public class DuplicateCheckController {
 	@ApiOperation("重复校验接口")
 	public Result<Object> doDuplicateCheck(DuplicateCheckVo duplicateCheckVo, HttpServletRequest request) {
 		Long num = null;
+		SysUser sysUser = SysUtils.getSysUserFromRedis(request,redisUtil);
+		if (!StringUtil.isNullOrEmpty(duplicateCheckVo.getFieldGsdm()))
+		{
+			duplicateCheckVo.setFieldGsdmVal(sysUser.getGsdm());
+		}
 
 		log.info("----duplicate check------："+ duplicateCheckVo.toString());
 		if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {

@@ -33,7 +33,7 @@ public interface ISysBaseAPI {
 	 * @return
 	 */
 	public LoginUser getUserByName(String username);
-	
+
 	/**
 	  * 根据用户id查询用户信息
 	 * @param id
