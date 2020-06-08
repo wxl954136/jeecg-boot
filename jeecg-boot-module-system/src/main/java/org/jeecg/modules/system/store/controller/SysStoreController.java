@@ -1,14 +1,14 @@
 package org.jeecg.modules.system.store.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.system.SystemUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 
@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,8 +62,34 @@ public class SysStoreController extends JeecgController<SysStore, ISysStoreServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		/*
 		System.out.println("1=============================");
+
+		Map<String,String[]> mapResult = new HashMap<>();
+		mapResult.put("gsdm",new String[]{SysUtils.getLoginUser().getGsdm()});
+		mapResult.put("name",new String[]{"三"});
+		Map<String,String[]> map=mapResult;
+		//遍历
+		for(Iterator iter=map.entrySet().iterator();iter.hasNext();) {
+			Map.Entry element = (Map.Entry) iter.next();
+			//key值
+			Object strKey = element.getKey();
+			//value,数组形式
+			String[] value = (String[]) element.getValue();
+			String yyy = " zzzz ==== " +  strKey.toString() + "  :  ";
+			//System.out.print(strKey.toString() + "=");
+			String result = "";
+			for (int i = 0; i < value.length; i++) {
+				result = result +  value[i] + "===";
+			}
+			mapResult.put(strKey.toString(),value);
+
+			System.out.println(yyy + result );
+		}
+
+*/
 		QueryWrapper<SysStore> queryWrapper = QueryGenerator.initQueryWrapper(sysStore, req.getParameterMap());
+		//QueryWrapper<SysStore> queryWrapper = QueryGenerator.initQueryWrapper(sysStore, mapResult);
 		Page<SysStore> page = new Page<SysStore>(pageNo, pageSize);
 		IPage<SysStore> pageList = sysStoreService.page(page, queryWrapper);
 		return Result.ok(pageList);

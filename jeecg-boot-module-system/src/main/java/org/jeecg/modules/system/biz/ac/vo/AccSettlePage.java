@@ -87,7 +87,9 @@ public class AccSettlePage {
 	@Excel(name = "单据来源", width = 15)
 	@ApiModelProperty(value = "单据来源")
 	private String noteSource;
-	
+
+	@ApiModelProperty(value = "公司代码")
+	private String gsdm;
 	@ExcelCollection(name="结算明细表")
 	@ApiModelProperty(value = "结算明细表")
 	private List<AccSettleDetail> accSettleDetailList;

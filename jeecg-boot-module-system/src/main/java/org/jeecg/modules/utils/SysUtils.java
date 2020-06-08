@@ -1,11 +1,16 @@
 package org.jeecg.modules.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysUser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class SysUtils {
 
@@ -57,5 +62,38 @@ public class SysUtils {
         String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
         SysUser loginUser = (SysUser)redisUtil.get(token);
         return loginUser;
+    }
+    public static LoginUser getLoginUser()
+    {
+        return (LoginUser) SecurityUtils.getSubject().getPrincipal();
+    }
+
+    public static Map getNormalRequstMap(HttpServletRequest request) {
+        // 参数Map
+        Map properties = request.getParameterMap();
+        // 返回值Map
+        Map returnMap = new HashMap();
+        Iterator entries = properties.entrySet().iterator();
+        Map.Entry entry;
+        String name = "";
+        String value = "";
+        while (entries.hasNext()) {
+            entry = (Map.Entry) entries.next();
+            name = (String) entry.getKey();
+            Object valueObj = entry.getValue();
+            if (null == valueObj) {
+                value = "";
+            } else if (valueObj instanceof String[]) {
+                String[] values = (String[]) valueObj;
+                for (int i = 0; i < values.length; i++) {
+                    value = values[i] + ",";
+                }
+                value = value.substring(0, value.length() - 1);
+            } else {
+                value = valueObj.toString();
+            }
+            returnMap.put(name, value);
+        }
+        return returnMap;
     }
 }

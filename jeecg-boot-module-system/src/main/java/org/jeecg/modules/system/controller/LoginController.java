@@ -68,7 +68,7 @@ public class LoginController {
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
 		username = SysUtils.getUsername(gsdm,username); //把username转成唯一带公司代码的
-		System.out.println("login：============" + username);
+
 
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 		//前端密码加密，后端进行密码解密
@@ -102,7 +102,6 @@ public class LoginController {
 			return result;
 		}
 
-		System.out.println("x=========" + sysUser.getSalt());
 		//2. 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();

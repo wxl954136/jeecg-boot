@@ -3,8 +3,11 @@ package org.jeecg.modules.system.bank.controller;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.system.bank.entity.SysBank;
 import org.jeecg.modules.system.bank.service.ISysBankService;
 
@@ -14,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,6 +72,9 @@ public class SysBankController extends JeecgController<SysBank, ISysBankService>
 	@ApiOperation(value="银行信息-添加", notes="银行信息-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysBank sysBank) {
+
+
+		sysBank.setGsdm(SysUtils.getLoginUser().getGsdm());
 		sysBankService.save(sysBank);
 		return Result.ok("添加成功！");
 	}

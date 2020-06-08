@@ -92,7 +92,9 @@ public class BizPurchaseInController {
 
 		QueryWrapper<BizPurchaseIn> queryWrapper = QueryGenerator.initQueryWrapper(bizPurchaseIn, req.getParameterMap());
 		Page<BizPurchaseIn> page = new Page<BizPurchaseIn>(pageNo, pageSize);
+
 		IPage<BizPurchaseIn> pageList = bizPurchaseInService.page(page, queryWrapper);
+
 		return Result.ok(pageList);
 	}
 	
@@ -109,10 +111,14 @@ public class BizPurchaseInController {
 
 		if (SysUtils.izNewNote(bizPurchaseInPage.getBizNo()))
 		{
-
+				//生成新单
 		}
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
+
+		bizPurchaseIn.setGsdm(SysUtils.getLoginUser().getGsdm());
+		bizPurchaseIn.setDelFlag("0"); //默认不删除
+
 		bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
 		return Result.ok("添加成功！");
 	}

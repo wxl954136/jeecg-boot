@@ -1,5 +1,7 @@
 package org.jeecg.modules.system.biz.po.service.impl;
 
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseIn;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper;
@@ -34,6 +36,8 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		if(bizPurchaseInDetailList!=null && bizPurchaseInDetailList.size()>0) {
 			for(BizPurchaseInDetail entity:bizPurchaseInDetailList) {
 				//外键设置
+				entity.setGsdm(bizPurchaseIn.getGsdm());
+				entity.setDelFlag("0");
 				entity.setHeadId(bizPurchaseIn.getId());
 				bizPurchaseInDetailMapper.insert(entity);
 			}

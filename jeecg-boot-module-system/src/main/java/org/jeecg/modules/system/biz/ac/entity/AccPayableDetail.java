@@ -68,6 +68,9 @@ public class AccPayableDetail implements Serializable {
 	@Excel(name = "乐观锁", width = 15)
 	@ApiModelProperty(value = "乐观锁")
 	private Integer updateCount;
+
+	@ApiModelProperty(value = "删除标记")
+	private String delFlag;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")

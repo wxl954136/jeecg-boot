@@ -89,4 +89,9 @@ public class SysBank implements Serializable {
     /**乐观锁*/
     @ApiModelProperty(value = "乐观锁")
     private java.lang.Integer updateCount;
+    /**
+     * 公司代码
+     */
+    private String gsdm;
+
 }

@@ -71,7 +71,7 @@ public class AccPayable implements Serializable {
     @ApiModelProperty(value = "经手人")
     private String handler;
 	/**删除标记*/
-	@Excel(name = "删除标记", width = 15)
+
     @ApiModelProperty(value = "删除标记")
     private String delFlag;
 	/**备注*/

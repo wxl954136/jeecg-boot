@@ -81,5 +81,8 @@ public class SysDict implements Serializable {
      */
     private Date updateTime;
 
-
+    /**
+     * 公司代码
+     */
+    private String gsdm;
 }

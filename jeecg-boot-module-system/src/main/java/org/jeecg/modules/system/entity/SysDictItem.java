@@ -78,5 +78,5 @@ public class SysDictItem implements Serializable {
 
     private Date updateTime;
 
-
+    private String gsdm;
 }
