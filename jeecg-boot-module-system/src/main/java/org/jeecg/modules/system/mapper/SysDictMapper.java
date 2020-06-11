@@ -41,6 +41,10 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	@Deprecated
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
 
+	//悠蓝改造 dict 是否有禁用的情况
+	@Deprecated
+	public List<DictModel> queryTableDictItemsByCodeEnableAndFilter(@Param("table") String table,@Param("text") String text,@Param("enable") String enable,@Param("code") String code,@Param("filterSql") String filterSql);
+
 	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
 
 	@Deprecated

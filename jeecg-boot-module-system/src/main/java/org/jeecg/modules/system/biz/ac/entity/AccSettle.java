@@ -82,7 +82,7 @@ public class AccSettle implements Serializable {
 	/**更新版本号*/
 	@Excel(name = "更新版本号", width = 15)
     @ApiModelProperty(value = "更新版本号")
-    private String updateCount;
+    private Integer updateCount;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")

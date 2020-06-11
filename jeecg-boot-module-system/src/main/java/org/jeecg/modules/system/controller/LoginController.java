@@ -359,8 +359,6 @@ public class LoginController {
 		redisUtil.set(token,sysUser);
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 
-		System.out.println("youlan ========这里放Redis信息======9991  " + token);
-		System.out.println("youlan ==============9992  " + CommonConstant.PREFIX_USER_TOKEN + token);
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject();
 		List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());

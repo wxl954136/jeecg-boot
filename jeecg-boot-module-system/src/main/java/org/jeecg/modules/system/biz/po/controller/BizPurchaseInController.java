@@ -3,10 +3,10 @@ package org.jeecg.modules.system.biz.po.controller;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.mapper.SysCommonMapper;
+import org.jeecg.modules.system.model.SysNoteBizNoVo;
 import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -65,6 +67,8 @@ public class BizPurchaseInController {
 	private IBizPurchaseInDetailService bizPurchaseInDetailService;
 
 	 @Autowired
+	 SysCommonMapper sysCommonMapper;
+	 @Autowired
 	 HttpServletRequest request;
 	 @Autowired
 	 private RedisUtil redisUtil;
@@ -80,15 +84,12 @@ public class BizPurchaseInController {
 	 */
 	@AutoLog(value = "采购信息主表-分页列表查询")
 	@ApiOperation(value="采购信息主表-分页列表查询", notes="采购信息主表-分页列表查询")
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/list/{bizType}")
 	public Result<?> queryPageList(BizPurchaseIn bizPurchaseIn,
+								   @PathVariable("bizType") String bizType,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-
-		String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
-		SysUser loginUser = (SysUser)redisUtil.get(token);
-		System.out.println(loginUser.getUsername() + "====" + loginUser.getGsdm());
 
 		QueryWrapper<BizPurchaseIn> queryWrapper = QueryGenerator.initQueryWrapper(bizPurchaseIn, req.getParameterMap());
 		Page<BizPurchaseIn> page = new Page<BizPurchaseIn>(pageNo, pageSize);
@@ -106,18 +107,24 @@ public class BizPurchaseInController {
 	 */
 	@AutoLog(value = "采购信息主表-添加")
 	@ApiOperation(value="采购信息主表-添加", notes="采购信息主表-添加")
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody BizPurchaseInPage bizPurchaseInPage) {
-
-		if (SysUtils.izNewNote(bizPurchaseInPage.getBizNo()))
+	@PostMapping(value = "/add/{bizType}")
+	public Result<?> add(@PathVariable("bizType") String bizType,@RequestBody BizPurchaseInPage bizPurchaseInPage) {
+		if (bizPurchaseInPage.getBizPurchaseInDetailList().size()<=0)
 		{
-				//生成新单
+			return Result.error("请添加明细");
 		}
+
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
+		if (SysUtils.izNewNote(bizPurchaseInPage.getBizNo()))
+		{
+			//String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"biz_purchase_in",SysStatusEnum.NOTE_PO_IN.getValue());
+			String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"biz_purchase_in",bizType.trim().toUpperCase());
+			bizPurchaseIn.setBizNo(newBizNo);
+		}
+		//必须要给，否则无法计算库存，入库和退货用同一个组件
+		bizPurchaseIn.setBizType(bizType.toUpperCase().trim());
 
-		bizPurchaseIn.setGsdm(SysUtils.getLoginUser().getGsdm());
-		bizPurchaseIn.setDelFlag("0"); //默认不删除
 
 		bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
 		return Result.ok("添加成功！");
@@ -133,6 +140,7 @@ public class BizPurchaseInController {
 	@ApiOperation(value="采购信息主表-编辑", notes="采购信息主表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody BizPurchaseInPage bizPurchaseInPage) {
+
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
 		BizPurchaseIn bizPurchaseInEntity = bizPurchaseInService.getById(bizPurchaseIn.getId());

@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.RedisUtil;
@@ -16,6 +17,7 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.trader.entity.SysTrader;
 import org.jeecg.modules.system.trader.service.ISysTraderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -74,6 +76,7 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	@AutoLog(value = "往来单位-添加")
 	@ApiOperation(value="往来单位-添加", notes="往来单位-添加")
 	@PostMapping(value = "/add")
+	@CacheEvict(value= CacheConstant.SYS_TRADER_CACHE, allEntries=true)
 	public Result<?> add(@RequestBody SysTrader sysTrader) {
 		sysTraderService.save(sysTrader);
 		return Result.ok("添加成功！");
@@ -88,11 +91,11 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	@AutoLog(value = "往来单位-编辑")
 	@ApiOperation(value="往来单位-编辑", notes="往来单位-编辑")
 	@PutMapping(value = "/edit")
+	@CacheEvict(value= CacheConstant.SYS_TRADER_CACHE, allEntries=true)
 	public Result<?> edit(@RequestBody SysTrader sysTrader) {
 		sysTraderService.updateById(sysTrader);
 		return Result.ok("编辑成功!");
 	}
-	
 	/**
 	 *   通过id删除
 	 *
@@ -102,6 +105,7 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	@AutoLog(value = "往来单位-通过id删除")
 	@ApiOperation(value="往来单位-通过id删除", notes="往来单位-通过id删除")
 	@DeleteMapping(value = "/delete")
+	@CacheEvict(value= CacheConstant.SYS_TRADER_CACHE, allEntries=true)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		sysTraderService.removeById(id);
 		return Result.ok("删除成功!");
@@ -116,6 +120,7 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	@AutoLog(value = "往来单位-批量删除")
 	@ApiOperation(value="往来单位-批量删除", notes="往来单位-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
+	@CacheEvict(value= CacheConstant.SYS_TRADER_CACHE, allEntries=true)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.sysTraderService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功!");
@@ -143,10 +148,9 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	  * @return
 	  */
 	 @GetMapping("/querySysTraderList")
-	 public Result getTraderList() {
+		 public Result getTraderList() {
 		 String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
 		 SysUser loginUser = (SysUser)redisUtil.get(token);
-		 //System.out.println("querySysTrader:=====" + loginUser.getGsdm() + "====" + loginUser.getUsername());
 		 Result<Map<String, Object>> result = new Result<Map<String, Object>>();
 		 Map<String, Object> map = new HashMap<String, Object>();
 		 SysTrader sysTrader = new SysTrader();

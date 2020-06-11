@@ -86,7 +86,7 @@ public class BizSalesOutPage {
 	/**版本*/
 	@Excel(name = "版本", width = 15)
 	@ApiModelProperty(value = "版本")
-	private String updateCount;
+	private Integer updateCount;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")

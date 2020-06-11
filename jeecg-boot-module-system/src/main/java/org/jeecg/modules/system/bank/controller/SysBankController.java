@@ -72,8 +72,6 @@ public class SysBankController extends JeecgController<SysBank, ISysBankService>
 	@ApiOperation(value="银行信息-添加", notes="银行信息-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysBank sysBank) {
-
-
 		sysBank.setGsdm(SysUtils.getLoginUser().getGsdm());
 		sysBankService.save(sysBank);
 		return Result.ok("添加成功！");

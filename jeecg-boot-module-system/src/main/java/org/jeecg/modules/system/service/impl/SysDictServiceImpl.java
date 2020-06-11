@@ -14,6 +14,7 @@ import org.jeecg.modules.system.mapper.SysDictItemMapper;
 import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -84,33 +85,43 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	 */
 
 	@Override
-	@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key")
+	//@Cacheable(value = CacheConstant.SYS_DICT_CACHE,key = "#code+':'+#key")
 	public String queryDictTextByKey(String code, String key) {
 		log.info("无缓存dictText的时候调用这里！");
 		return sysDictMapper.queryDictTextByKey(code, key);
 	}
 
 	/**
-	 * 通过查询指定table的 text code 获取字典
-	 * dictTableCache采用redis缓存有效期10分钟
-	 * @param table
-	 * @param text
-	 * @param code
-	 * @return
+     * 通过查询指定table的 text code 获取字典
+     * 	 * dictTableCache采用redis缓存有效期10分钟
+     * 	 * @param table
+     * 	 * @param text
+     * 	 * @param code
+     * 	 * @return
 	 */
 	@Override
-	//@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DICT_TABLE_CACHE)
 	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
-		log.info("无缓存dictTableList的时候调用这里！");
-		return sysDictMapper.queryTableDictItemsByCode(table,text,code);
+		log.info("无缓存dictTableList的时候调用这里！---原来没有条件，现增加条件公司代码条件");
+		//凡是无缓存费点劲一加条件，走条件 ,特殊的表无gsdm注意过滤
+		String gsdm = SysUtils.getLoginUser().getGsdm();
+		String filter = " gsdm = '" + gsdm + "'" ;
+
+		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,gsdm);
+		//return sysDictMapper.queryTableDictItemsByCode(table,text,code,gsdm);
 	}
 
 	@Override
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(String table, String text, String code, String filterSql) {
-		log.info("无缓存dictTableList的时候调用这里！");
+		log.info("无缓存dictTableList的时候调用这里(添加条件)！");
 		return sysDictMapper.queryTableDictItemsByCodeAndFilter(table,text,code,filterSql);
 	}
-	
+	//悠蓝改造，增加enable属性，是否可选择选项
+	@Override
+	public List<DictModel> queryTableDictItemsByCodeEnableAndFilter(String table, String text, String enable,String code, String filterSql) {
+		log.info("无缓存dictTableList的时候调用这里(添加条件)！");
+		return sysDictMapper.queryTableDictItemsByCodeEnableAndFilter(table,text,enable,code,filterSql);
+	}
 	/**
 	 * 通过查询指定table的 text code 获取字典值text
 	 * dictTableCache采用redis缓存有效期10分钟

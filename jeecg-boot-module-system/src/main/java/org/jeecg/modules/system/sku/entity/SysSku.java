@@ -75,9 +75,8 @@ public class SysSku implements Serializable {
     @ApiModelProperty(value = "商品全称")
     private String fullName;
 	/**拼音*/
-	@Excel(name = "拼音", width = 15)
-    @ApiModelProperty(value = "拼音")
-    private String pinyin;
+
+
 	/**商品分类*/
 	@Excel(name = "商品分类", width = 15)
     @ApiModelProperty(value = "商品分类")
@@ -113,4 +112,6 @@ public class SysSku implements Serializable {
 	@Excel(name = "删除标记", width = 15)
     @ApiModelProperty(value = "删除标记")
     private String delFlag;
+    @ApiModelProperty(value = "公司代码")
+    private String gsdm;
 }

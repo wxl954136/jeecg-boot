@@ -117,7 +117,9 @@ public class SysTrader implements Serializable {
 	@Excel(name = "乐观锁", width = 15)
     @ApiModelProperty(value = "乐观锁")
     private Integer updateCount;
-
+    /**备注*/
+    @ApiModelProperty(value = "备注")
+    private String memo;
     /**公司代码*/
     @ApiModelProperty(value = "公司代码")
     private String gsdm;

@@ -33,6 +33,11 @@ public class DictModel implements Serializable{
 	private String text;
 
 	/**
+	 * 是否禁用  和表中的数据库字段对应  1:启用 0禁用
+	 */
+	private String enable;
+
+	/**
 	 * 特殊用途： JgEditableTable
 	 * @return
 	 */

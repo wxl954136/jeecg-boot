@@ -109,12 +109,8 @@ public class SysUserController {
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 
-        String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
-        System.out.println(  "================youlan===  3333===================");
-        System.out.println( token  + "================youlan===  111===================");
-        SysUser loginUser = (SysUser)redisUtil.get(token);
-        System.out.println(loginUser.getUsername() + "====" + loginUser.getGsdm());
-        System.out.println(  "================youlan===  4444===================");
+
+
 
 
 		Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
@@ -127,6 +123,7 @@ public class SysUserController {
 		//批量查询用户的所属部门
         //step.1 先拿到全部的 useids
         //step.2 通过 useids，一次性查询用户的所属部门名字
+
         List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
         if(userIds!=null && userIds.size()>0){
             Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
@@ -189,7 +186,6 @@ public class SysUserController {
 				result.error500("未找到对应实体");
 			}else {
 				SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
-                System.out.println("y===============" +user.getUpdateBy() );
 				user.setUpdateTime(new Date());
 				//String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), sysUser.getSalt());
 				user.setPassword(sysUser.getPassword());

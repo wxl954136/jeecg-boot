@@ -4,10 +4,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.mapper.SysCommonMapper;
+import org.jeecg.modules.system.model.SysNoteBizNoVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,6 +34,42 @@ public class SysUtils {
         return result;
     }
 
+    /**
+     *
+     * @param sysCommonMapper 通用mapper
+     * @param tableName 表名
+     * @param bizTypeVal  单据类型
+     * @return
+     */
+    public static synchronized  String getNewNoteNo(SysCommonMapper sysCommonMapper,String tableName,String bizTypeVal){
+
+
+//生成新单
+        SysNoteBizNoVo bizNoVo = new SysNoteBizNoVo();
+        bizNoVo.setTableName(tableName);
+        bizNoVo.setFieldBizType("biz_type");
+//        bizNoVo.setFieldBizTypeVal(SysStatusEnum.NOTE_PO_IN.getValue());
+        bizNoVo.setFieldBizTypeVal(bizTypeVal);
+        bizNoVo.setFieldGsdm("gsdm");
+        bizNoVo.setFieldGsdmVal(SysUtils.getLoginUser().getGsdm());
+        String note_no = sysCommonMapper.getNoteLastBizNo(bizNoVo);
+
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format( new Date());
+        String notePrefix = bizTypeVal + timestamp;
+        String rSerial = "001";
+        String rNoteNo = notePrefix + rSerial;
+        if (!oConvertUtils.isEmpty(note_no) && note_no.indexOf(notePrefix)>=0)
+        {
+            String  serial = note_no.substring(notePrefix.length());
+            int iSerial = Integer.parseInt(serial);
+            DecimalFormat df = new DecimalFormat("0000");
+            iSerial = iSerial + 1;
+            String sSerial = df.format(iSerial);
+            rNoteNo = notePrefix + sSerial;
+        }
+        return rNoteNo;
+    }
+
     public static String getUsername(String gsdm,String usersign)
     {
         return gsdm.trim() + "-#-" + usersign.trim();
@@ -38,7 +80,7 @@ public class SysUtils {
      * @param username
      * @return
      */
-    public String getUsernameOfGsdm(String username)
+    public static String getUsernameOfGsdm(String username)
     {
         String arr[]  = username.split("-#-");
         if (arr.length !=2) return null;
@@ -50,12 +92,47 @@ public class SysUtils {
      * @param username
      * @return
      */
-    public String getUsernameOfName(String username)
+    public static  String getUsernameOfName(String username)
     {
         String arr[]  = username.split("-#-");
         if (arr.length !=2) return null;
         return arr[1];
     }
+
+    /**
+     * 获取递增版本号
+     * @param updateCount
+     * @return
+     */
+    public static Integer getUpdateCount(Integer updateCount){
+
+        if (updateCount == null ) updateCount = 1 ;
+        else
+        {
+            updateCount = updateCount + 1;
+        }
+        return updateCount ;
+    }
+
+    /**
+     * 如果是入库，则将库存以正数计算，如果是出库，则为负数，如果是收款为正，如果是付款则为负-
+     * @param bizType
+     * @return
+     */
+    public static Integer getNoteAlte( String bizType){
+        Integer ALTE = 1;
+        if(SysStatusEnum.NOTE_PO_IN.getValue().equalsIgnoreCase(bizType))
+        {
+            ALTE = 1;
+        }
+        if(SysStatusEnum.NOTE_PO_BACK.getValue().equalsIgnoreCase(bizType))
+        {
+            ALTE = -1;
+        }
+        return ALTE ;
+    }
+
+
     public static SysUser getSysUserFromRedis(HttpServletRequest request,RedisUtil redisUtil)
     {
         //获取的SysUser对象

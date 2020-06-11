@@ -11,6 +11,7 @@
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail">
 		SELECT * 
 		FROM  biz_purchase_in_detail
-		WHERE
-			 head_id = #{mainId} 	</select>
+		WHERE head_id = #{mainId}
+		AND del_flag = '0'
+	</select>
 </mapper>

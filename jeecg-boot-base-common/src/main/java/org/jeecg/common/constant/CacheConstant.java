@@ -32,6 +32,10 @@ public interface CacheConstant {
 	 */
 	public static final String SYS_DEPARTS_CACHE = "sys:cache:depart:alldata";
 
+	/**
+	 * 全部往来单位信息缓存
+	 */
+	public static final String SYS_TRADER_CACHE = "sys:cache:trader:alldata";
 
 	/**
 	 * 全部部门ids缓存

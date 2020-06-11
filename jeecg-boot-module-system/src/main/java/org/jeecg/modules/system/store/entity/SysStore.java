@@ -77,9 +77,8 @@ public class SysStore implements Serializable {
     @ApiModelProperty(value = "刪除標記")
     private String delFlag;
 	/**乐观锁*/
-	@Excel(name = "乐观锁", width = 15)
     @ApiModelProperty(value = "乐观锁")
-    private String updateCount;
+    private Integer updateCount;
 	/**公司代码*/
     @ApiModelProperty(value = "公司代码")
     private String gsdm;

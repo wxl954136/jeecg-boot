@@ -136,16 +136,36 @@ public class SysDictController {
 			if(dictCode.indexOf(",")!=-1) {
 				//关联表字典（举例：sys_user,realname,id）
 				String[] params = dictCode.split(",");
-				
+
 				if(params.length<3) {
 					result.error500("字典Code格式不正确！");
 					return result;
 				}
+
 				//SQL注入校验（只限制非法串改数据库）
 				final String[] sqlInjCheck = {params[0],params[1],params[2]};
 				SqlInjectionUtil.filterContent(sqlInjCheck);
-				
-				if(params.length==4) {
+				if (params.length==5 || params.length==4 ||  params.length==3)
+				{
+					if (params[1].indexOf("___") >=0) {
+						String content = "concat(";
+						String sp[] = params[1].split("___");
+						content += (sp[0]+",");
+						for (int r = 1; r<sp.length ; r++)
+						{
+							content += ("'['," + sp[r] + ",']',");
+						}
+						content+="'')";
+						params[1] = "replace(" + content + ",'[]','') ";
+					}
+				}
+				if(params.length==5) {
+					//当是5个参数时，注意加了enable属性，从里到外于用户控制下拉框是否可以选择即，字段中的enable_flag
+					//0:表示table,1:表示查询的显示字段如name,2:表示enable_flag 3:id,4:fileter的条件
+					SqlInjectionUtil.specialFilterContent(params[4]);
+					ls = sysDictService.queryTableDictItemsByCodeEnableAndFilter(params[0],params[1],params[2],params[3],params[4]);
+				}else if (params.length==4) {
+					//当是5个参数时，注意加了enable属性，从里到外于用户控制下拉框是否可以选择即，字段中的enable_flag
 					//SQL注入校验（查询条件SQL 特殊check，此方法仅供此处使用）
 					SqlInjectionUtil.specialFilterContent(params[3]);
 					ls = sysDictService.queryTableDictItemsByCodeAndFilter(params[0],params[1],params[2],params[3]);

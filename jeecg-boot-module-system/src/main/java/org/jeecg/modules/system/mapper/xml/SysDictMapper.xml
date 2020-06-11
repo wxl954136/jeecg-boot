@@ -29,7 +29,13 @@
 			where ${filterSql}
 		</if>
 	</select>
-	
+	<!--通过查询指定table的 text code 获取字典（指定查询条件）-->
+	<select id="queryTableDictItemsByCodeEnableAndFilter" parameterType="String"  resultType="org.jeecg.common.system.vo.DictModel">
+		select ${text} as "text",${code} as "value" , ${enable} as  "enable" from ${table}
+		<if test="filterSql != null and filterSql != ''">
+			where ${filterSql}
+		</if>
+	</select>
 	<!--通过查询指定table的 text code key 获取字典值-->
 	<select id="queryTableDictTextByKey" parameterType="String" resultType="String">
 		   select ${text} as "text" from ${table} where ${code}= #{key}

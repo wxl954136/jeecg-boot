@@ -763,11 +763,11 @@ public class QueryGenerator {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
 				}
 				String filedSql = getSingleSqlByRule(rule, oConvertUtils.camelToUnderline(name), value,isString);
-				System.out.println("x=========" + filedSql);
+
 				sb.append(sql_and+filedSql);
 			}
 		}
-		System.out.println("1=========" + sql_and);
+
 
 		log.info("query auth sql is:"+sb.toString());
 		return sb.toString();
