@@ -3,7 +3,7 @@ package org.jeecg.modules.system.core.entity;
 import lombok.Data;
 
 @Data
-public class CoreBaseHead {
+public class CoreStockBaseHead {
     private String id;
     private String bizType;
     private String storeId;

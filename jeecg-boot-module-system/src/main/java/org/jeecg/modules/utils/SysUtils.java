@@ -11,6 +11,7 @@ import org.jeecg.modules.system.mapper.SysCommonMapper;
 import org.jeecg.modules.system.model.SysNoteBizNoVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -172,5 +173,25 @@ public class SysUtils {
             returnMap.put(name, value);
         }
         return returnMap;
+    }
+    public static Object getClazzFieldValue(Class clazz,Object object,String fieldName)
+    {
+        Object result = null;
+        try {
+            Class<?> clazzr = clazz;
+            Object obj = object;
+            Field[] fields = clazzr.getDeclaredFields();
+            for (Field field : fields) {
+                String name = field.getName();
+                if (name.equalsIgnoreCase(fieldName))
+                {
+                    field.setAccessible(true); // 私有属性必须设置访问权限
+                    result = field.get(obj);
+                    break;
+                }
+                // 这里可以编写你的业务代码
+            }
+        }catch(Exception eg){}
+        return result;
     }
 }

@@ -3,7 +3,7 @@ package org.jeecg.modules.system.core.entity;
 import lombok.Data;
 
 @Data
-public class CoreBaseDetail {
+public class CoreStockBaseDetail {
     private String id;
     private String skuId;
     private java.math.BigDecimal qty;

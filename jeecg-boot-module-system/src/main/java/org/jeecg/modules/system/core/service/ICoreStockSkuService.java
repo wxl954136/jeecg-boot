@@ -1,8 +1,5 @@
 package org.jeecg.modules.system.core.service;
 
-import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.system.core.entity.CoreBaseDetail;
-import org.jeecg.modules.system.core.entity.CoreBaseHead;
 import org.jeecg.modules.system.core.entity.CoreStockSku;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.core.entity.CoreStockSkuVo;

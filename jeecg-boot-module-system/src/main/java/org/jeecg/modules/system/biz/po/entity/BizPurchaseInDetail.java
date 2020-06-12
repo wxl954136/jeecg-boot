@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value="biz_purchase_in对象", description="采购信息主表")
 @Data
 @TableName("biz_purchase_in_detail")
-public class BizPurchaseInDetail implements Serializable {
+public class BizPurchaseInDetail  implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/

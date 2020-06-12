@@ -1,8 +1,6 @@
 package org.jeecg.modules.system.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.modules.system.core.entity.CoreBaseDetail;
-import org.jeecg.modules.system.core.entity.CoreBaseHead;
 import org.jeecg.modules.system.core.entity.CoreStockSku;
 import org.jeecg.modules.system.core.entity.CoreStockSkuVo;
 import org.jeecg.modules.system.core.mapper.CoreStockSkuMapper;
