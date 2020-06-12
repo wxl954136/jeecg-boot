@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description: 销售主表
  * @Author: jeecg-boot
- * @Date:   2020-06-04
+ * @Date:   2020-06-12
  * @Version: V1.0
  */
 @Data
@@ -86,7 +86,7 @@ public class BizSalesOutPage {
 	/**版本*/
 	@Excel(name = "版本", width = 15)
 	@ApiModelProperty(value = "版本")
-	private Integer updateCount;
+	private String updateCount;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")

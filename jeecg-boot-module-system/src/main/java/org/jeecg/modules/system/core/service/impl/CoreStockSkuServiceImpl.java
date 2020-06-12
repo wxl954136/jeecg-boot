@@ -26,10 +26,7 @@ public class CoreStockSkuServiceImpl extends ServiceImpl<CoreStockSkuMapper, Cor
     private CoreStockSkuMapper coreStockSkuMapper;
 
 
-    @Override
-    public CoreStockSku getCoreStockSkuBySkuAndStore(String skuId, String storeId) {
-        return coreStockSkuMapper.getCoreStockSkuBySkuAndStore(skuId,storeId, SysUtils.getLoginUser().getGsdm());
-    }
+
 
     /**
      * 更新库存一律通过此通道

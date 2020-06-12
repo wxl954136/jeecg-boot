@@ -13,14 +13,6 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface ICoreStockSkuService extends IService<CoreStockSku> {
-    /**
-     *
-     * 公司代码调用的时候统一从Mapper中间给值，获取shiro中的登录用户取得
-     * @param skuId  SKUID
-     * @param storeId 仓库id
-     * @return
-     */
-    CoreStockSku getCoreStockSkuBySkuAndStore(String skuId,  String storeId);
 
     /**
      *

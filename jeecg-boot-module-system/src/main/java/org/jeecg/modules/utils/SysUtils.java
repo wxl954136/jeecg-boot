@@ -174,6 +174,14 @@ public class SysUtils {
         }
         return returnMap;
     }
+
+    /**
+     * 通过反射取出对应的字段值
+     * @param clazz
+     * @param object
+     * @param fieldName
+     * @return
+     */
     public static Object getClazzFieldValue(Class clazz,Object object,String fieldName)
     {
         Object result = null;

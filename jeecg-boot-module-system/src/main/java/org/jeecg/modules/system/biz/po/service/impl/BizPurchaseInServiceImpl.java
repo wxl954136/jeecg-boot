@@ -6,8 +6,10 @@ import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInMapper;
 import org.jeecg.modules.system.biz.po.service.IBizPurchaseInService;
+import org.jeecg.modules.system.core.entity.BizFlowSku;
 import org.jeecg.modules.system.core.entity.CoreStockBaseDetail;
 import org.jeecg.modules.system.core.entity.CoreStockBaseHead;
+import org.jeecg.modules.system.core.service.IBizFlowSkuService;
 import org.jeecg.modules.system.core.service.ICoreStockSkuService;
 import org.jeecg.modules.system.core.utils.CoreUtils;
 import org.jeecg.modules.utils.SysUtils;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,9 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 	private BizPurchaseInDetailMapper bizPurchaseInDetailMapper;
 	@Autowired
 	private ICoreStockSkuService coreStockSkuService;
+
+	@Autowired
+	private IBizFlowSkuService bizFlowSkuService;
 	
 	@Override
 	@Transactional
@@ -48,7 +54,8 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 
 		//保存明细表
 		saveUpdateDetail(bizPurchaseIn,null,bizPurchaseInDetailList);
-
+		//保存综合业务流水
+		saveUpdateBizFlowSku(bizPurchaseIn,null,bizPurchaseInDetailList);
 		//保存库存
 		saveUpdateCostStockSku(bizPurchaseIn,null,bizPurchaseInDetailList);
 
@@ -74,34 +81,28 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		 */
 		saveUpdateDetail(bizPurchaseIn,oldBizPurChaseInDetail,bizPurchaseInDetailList);
 
-
 		/**
 		 * No.3 保存记录至商品业务流水表biz_flow_sku
 		 */
+		saveUpdateBizFlowSku(bizPurchaseIn,oldBizPurChaseInDetail,bizPurchaseInDetailList);
 
 		/**
-		 * No.4 保存记录至商品业务流水表biz_flow_sku
+		 * No.4保存记录至商品串号流水表biz_flow_serial
 		 */
 		/**
-		 * No.5 保存记录至商品串号流水表biz_flow_serial
+		 * No.5修改保存，更新至库存
 		 */
-		/**
-		 * No.6修改保存，更新至库存
-		 */
-
 		saveUpdateCostStockSku(bizPurchaseIn,oldBizPurChaseInDetail,bizPurchaseInDetailList);
 
 		/**
-		 * No.7保存数据至成本表
+		 * No.6保存数据至成本表
 		 */
 
-		/**
-		 * No.8保存数据至成本表core_cost
-		 */
 
 		/**
-		 * No.9保存数据至成本往来单位交易表acc_trade_amount
+		 * No.7保存数据至成本往来单位交易表acc_trade_amount
 		 */
+
 
 	}
 
@@ -111,8 +112,14 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		List<BizPurchaseInDetail> oldItemList = bizPurchaseInDetailMapper.selectByMainId(id);
 		BizPurchaseIn bizPurchaseIn = bizPurchaseInMapper.selectById(id);
 		bizPurchaseIn.setDelFlag("1"); //一律逻辑删除
+
 		bizPurchaseInMapper.updateById(bizPurchaseIn);
+
 		saveUpdateDetail(bizPurchaseIn,oldItemList,null);
+
+		saveUpdateBizFlowSku(bizPurchaseIn,oldItemList,null);
+
+
 		saveUpdateCostStockSku(bizPurchaseIn,oldItemList,null);
 	}
 
@@ -124,6 +131,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		}
 	}
 	/**
+	 * saveUpdateDetail
 	 * @mark ：当是修改数据时，更新明表
 	 * @auth 王晓陆
 	 * @param bizPurchaseIn
@@ -150,7 +158,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		return result;
 	}
 	/**
-	 *
+	 *saveUpdateActionData保存数据至数据库明细表
 	 * @param bizPurchaseIn
 	 * @param newTransList
 	 * @param updTransList
@@ -193,6 +201,13 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		}
 	}
 
+	/**
+	 * saveUpdateCostStockSku保存数据至库存
+	 * @param bizPurchaseIn
+	 * @param oldList
+	 * @param newList
+	 * @return
+	 */
 	public boolean saveUpdateCostStockSku(BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> oldList,List<BizPurchaseInDetail> newList)
 	{
 
@@ -208,6 +223,45 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		return true;
 	}
 
+	public boolean saveUpdateBizFlowSku(BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> oldList,List<BizPurchaseInDetail> newList)
+	{
+		//整理之前一定要设置
+		if(null!= oldList){
+			oldList.forEach( e -> {
+				e.setHeadId(bizPurchaseIn.getId());
+			} );
+		}
+		if(null!= newList){
+			newList.forEach( e -> {
+				e.setHeadId(bizPurchaseIn.getId());
+			} );
+		}
+		//detailId对应biz业务表中的id,在CoreUtils.getBizFlowSkuList进行设置
+		List<BizFlowSku> oldFlowList = CoreUtils.getBizFlowSkuList(oldList);
+		List<BizFlowSku> newFlowList = CoreUtils.getBizFlowSkuList(newList);
+
+
+		if(null!= oldFlowList){
+			oldFlowList.forEach( eo -> {
+				eo.setStoreId(bizPurchaseIn.getStoreId());
+				eo.setBizDate(bizPurchaseIn.getBizDate());
+				int ALPHA = SysUtils.getNoteAlte(eo.getBizType());  //根据单据类型判断库存是正还是负
+				eo.setQty(new BigDecimal(eo.getQty().doubleValue() * ALPHA));
+			} );
+		}
+		if(null!= newFlowList){
+			newFlowList.forEach( en -> {
+				en.setStoreId(bizPurchaseIn.getStoreId());
+				en.setBizDate(bizPurchaseIn.getBizDate());
+				//是正负，需从明细表中进行判断，换货时，一正一负，是以明细中来检验
+				int ALPHA = SysUtils.getNoteAlte(en.getBizType());  //根据单据类型判断库存是正还是负
+				en.setQty(new BigDecimal(en.getQty().doubleValue() * ALPHA));
+			} );
+		}
+		//修改时，得获取自己的id,否则，目前自己的id还是空的，因为原值id还是detail明细表的
+		bizFlowSkuService.updateBizFlowSku(oldFlowList,newFlowList);
+		return true;
+	}
 
 	
 }

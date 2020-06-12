@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @Description: 销售明细表
  * @Author: jeecg-boot
- * @Date:   2020-06-04
+ * @Date:   2020-06-12
  * @Version: V1.0
  */
 public interface IBizSalesOutDetailService extends IService<BizSalesOutDetail> {

@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description: 销售明细表
  * @Author: jeecg-boot
- * @Date:   2020-06-04
+ * @Date:   2020-06-12
  * @Version: V1.0
  */
 @ApiModel(value="biz_sales_out对象", description="销售主表")
