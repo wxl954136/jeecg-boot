@@ -2,23 +2,16 @@ package org.jeecg.modules.system.biz.po.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.modules.shiro.vo.DefContants;
-import org.jeecg.modules.system.entity.SysUser;
+
 import org.jeecg.modules.system.mapper.SysCommonMapper;
-import org.jeecg.modules.system.model.SysNoteBizNoVo;
-import org.jeecg.modules.utils.SysStatusEnum;
+
 import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -70,8 +63,7 @@ public class BizPurchaseInController {
 	 SysCommonMapper sysCommonMapper;
 	 @Autowired
 	 HttpServletRequest request;
-	 @Autowired
-	 private RedisUtil redisUtil;
+
 
 	/**
 	 * 分页列表查询
@@ -98,7 +90,7 @@ public class BizPurchaseInController {
 
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *
@@ -129,7 +121,7 @@ public class BizPurchaseInController {
 		bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
 		return Result.ok("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -148,9 +140,10 @@ public class BizPurchaseInController {
 			return Result.error("未找到对应数据");
 		}
 		bizPurchaseInService.updateMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
+
 		return Result.ok("编辑成功!");
 	}
-	
+
 	/**
 	 *   通过id删除
 	 *
@@ -164,7 +157,7 @@ public class BizPurchaseInController {
 		bizPurchaseInService.delMain(id);
 		return Result.ok("删除成功!");
 	}
-	
+
 	/**
 	 *  批量删除
 	 *
@@ -178,7 +171,7 @@ public class BizPurchaseInController {
 		this.bizPurchaseInService.delBatchMain(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
-	
+
 	/**
 	 * 通过id查询
 	 *
@@ -196,7 +189,7 @@ public class BizPurchaseInController {
 		return Result.ok(bizPurchaseIn);
 
 	}
-	
+
 	/**
 	 * 通过id查询
 	 *

@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description: 销售主表
  * @Author: jeecg-boot
- * @Date:   2020-06-12
+ * @Date:   2020-06-13
  * @Version: V1.0
  */
 @ApiModel(value="biz_sales_out对象", description="销售主表")
@@ -93,7 +93,7 @@ public class BizSalesOut implements Serializable {
 	/**版本*/
 	@Excel(name = "版本", width = 15)
     @ApiModelProperty(value = "版本")
-    private String updateCount;
+    private Integer updateCount;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
     @ApiModelProperty(value = "公司代码")

@@ -2,4 +2,84 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.core.mapper.CoreCostSkuMapper">
 
+    <!-- 总的集合供参考-->
+    <resultMap id="idReference" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="biz_date" property="bizDate" jdbcType="TIMESTAMP"/>
+        <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
+        <result column="qty" property="qty" jdbcType="NUMERIC"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <resultMap id="idAwaitCalCostSkuAndDate" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
+    </resultMap>
+    <!--取出所有待计算成本的sku及日期 -->
+    <select id="getAwaitCalCostSkuAndDate"    resultMap="idAwaitCalCostSkuAndDate">
+		 select sku_id,cost_date,cost_price as price  from core_cost_sku
+         where  cost_date &gt;= #{costDate}
+         and sku_id in (
+            <foreach collection="skuIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+         )
+        <!-- and sku_id = #{skuIds} -->
+         and gsdm = #{gsdm}
+         order by sku_id asc ,cost_date asc
+    </select>
+    <resultMap id="idYesterdayStockQty" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <!--取出昨日库存结存 建议加一个库存结存表，即截止到每天的库存，然后可以直接取库存，效率更高-->
+    <select id="getYesterdayStockQty"    resultMap="idYesterdayStockQty">
+        select sku_id,sum(qty) as qty  from biz_flow_sku
+        where   biz_date  &lt; #{bizDate}
+        and sku_id = #{skuId}
+        and del_flag =  '0'
+        and gsdm = #{gsdm}
+    </select>
+    <resultMap id="idYesterdayCostPrice" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="TIMESTAMP"/>
+        <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <!--取出昨天的成本 -->
+    <select id="getYesterdayCostPrice"    resultMap="idYesterdayCostPrice">
+         select sku_id,cost_date,cost_price as price from core_cost_sku
+         where 1=1
+         and cost_date  &lt; #{costDate}
+         and sku_id = #{skuId}
+         and gsdm = #{gsdm}
+         order by cost_date desc
+         limit 0,1
+    </select>
+
+    <resultMap id="idTodayPurchaseTotalQtyAndPrice" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="TIMESTAMP"/>
+        <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <!--取出当天的采购数量及采购总金额 -->
+    <select id="getTodayPurchaseTotalQtyAndPrice"    resultMap="idTodayPurchaseTotalQtyAndPrice">
+        select sku_id,sum(qty)  as qty ,sum(qty*price) as price from biz_flow_sku
+        where biz_date  =  #{bizDate}
+        and sku_id = #{skuId}
+        and biz_type in ('CGRK','')
+        and del_flag = '0'
+        and gsdm = #{gsdm}
+        group by sku_id
+    </select>
+
+    <!-- 彻底删除待被计算的成本,可以不加公司代码 -->
+    <delete id="deleteCoreCostSku">
+		delete  from  core_cost_sku
+		where sku_id  in (${skuIds})
+		and cost_date &gt;= #{costDate}
+		and gsdm = #{gsdm}
+	</delete>
+
 </mapper>

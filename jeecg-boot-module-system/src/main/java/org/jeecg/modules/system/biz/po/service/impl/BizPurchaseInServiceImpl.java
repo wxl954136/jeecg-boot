@@ -239,8 +239,6 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		//detailId对应biz业务表中的id,在CoreUtils.getBizFlowSkuList进行设置
 		List<BizFlowSku> oldFlowList = CoreUtils.getBizFlowSkuList(oldList);
 		List<BizFlowSku> newFlowList = CoreUtils.getBizFlowSkuList(newList);
-
-
 		if(null!= oldFlowList){
 			oldFlowList.forEach( eo -> {
 				eo.setStoreId(bizPurchaseIn.getStoreId());

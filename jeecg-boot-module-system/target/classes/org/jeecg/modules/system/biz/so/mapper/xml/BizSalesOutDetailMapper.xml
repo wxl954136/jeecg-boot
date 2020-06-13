@@ -6,11 +6,11 @@
 		DELETE 
 		FROM  biz_sales_out_detail 
 		WHERE
-			 headid = #{mainId} 	</delete>
+			 head_id = #{mainId} 	</delete>
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.system.biz.so.entity.BizSalesOutDetail">
 		SELECT * 
 		FROM  biz_sales_out_detail
 		WHERE
-			 headid = #{mainId} 	</select>
+			 head_id = #{mainId} 	</select>
 </mapper>

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * @Description: 销售明细表
  * @Author: jeecg-boot
- * @Date:   2020-06-12
+ * @Date:   2020-06-13
  * @Version: V1.0
  */
 public interface BizSalesOutDetailMapper extends BaseMapper<BizSalesOutDetail> {

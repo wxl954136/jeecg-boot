@@ -91,6 +91,10 @@ public class BizFlowSku implements Serializable {
 	@Excel(name = "单价", width = 15)
     @ApiModelProperty(value = "单价")
     private BigDecimal price;
+    /**单价*/
+    @Excel(name = "税率", width = 15)
+    @ApiModelProperty(value = "税率")
+    private Double rate;
 	/**乐观锁*/
 	@Excel(name = "乐观锁", width = 15)
     @ApiModelProperty(value = "乐观锁")

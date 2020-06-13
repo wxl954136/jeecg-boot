@@ -22,7 +22,9 @@ public enum  SysStatusEnum {
 
     NOTE_PO_IN("采购入库单","CGRK"),
     NOTE_PO_BACK("采购退货单","CGTH"),
-    NOTE_SALES_IN("销售单","XSD"),
+    NOTE_SALES_OUT("销售出库","CKD"),
+    NOTE_SALES_BACK("销售退货单","THD"),
+
 
     NOTE_PAYABLE("应付款","YFK"),
     NOTE_RECEIVABLE("应收款","YSK"),

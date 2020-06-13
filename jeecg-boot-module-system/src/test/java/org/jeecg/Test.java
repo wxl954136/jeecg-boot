@@ -3,10 +3,12 @@ package org.jeecg;
 
 
 
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.utils.SysUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Test {
@@ -15,9 +17,14 @@ public class Test {
 
     }
     public static void main(String args[]){
-
-
-
+/*
+        List<String > list = new ArrayList<>();
+        list.add("11111");
+        list.add("22222");
+        list.add("aaaa");
+        String rSkuIds = String.format("'%s'", String.join("','", list));
+        System.out.println(rSkuIds);
+*/
     }
 
     public static void testfs()

@@ -50,13 +50,11 @@ public class CoreCostSku implements Serializable {
     @ApiModelProperty(value = "月末存放yyyy-mm")
     private String costMonth;
 	/**库存*/
-	@Excel(name = "库存", width = 15)
-    @ApiModelProperty(value = "库存")
+	@Excel(name = "成本", width = 15)
+    @ApiModelProperty(value = "成本")
     private BigDecimal costPrice;
-	/**乐观锁*/
-	@Excel(name = "乐观锁", width = 15)
-    @ApiModelProperty(value = "乐观锁")
-    private Integer updateCount;
+
+
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
     @ApiModelProperty(value = "公司代码")

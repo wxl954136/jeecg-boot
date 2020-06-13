@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.modules.system.mapper.SysCommonMapper;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -45,7 +47,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
  /**
  * @Description: 销售主表
  * @Author: jeecg-boot
- * @Date:   2020-06-12
+ * @Date:   2020-06-13
  * @Version: V1.0
  */
 @Api(tags="销售主表")
@@ -57,7 +59,10 @@ public class BizSalesOutController {
 	private IBizSalesOutService bizSalesOutService;
 	@Autowired
 	private IBizSalesOutDetailService bizSalesOutDetailService;
-	
+	 @Autowired
+	 SysCommonMapper sysCommonMapper;
+	 @Autowired
+	 HttpServletRequest request;
 	/**
 	 * 分页列表查询
 	 *
@@ -69,8 +74,9 @@ public class BizSalesOutController {
 	 */
 	@AutoLog(value = "销售主表-分页列表查询")
 	@ApiOperation(value="销售主表-分页列表查询", notes="销售主表-分页列表查询")
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/list/{bizType}")
 	public Result<?> queryPageList(BizSalesOut bizSalesOut,
+								   @PathVariable("bizType") String bizType,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
@@ -88,10 +94,22 @@ public class BizSalesOutController {
 	 */
 	@AutoLog(value = "销售主表-添加")
 	@ApiOperation(value="销售主表-添加", notes="销售主表-添加")
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody BizSalesOutPage bizSalesOutPage) {
+	@PostMapping(value = "/add/{bizType}")
+	public Result<?> add(@PathVariable("bizType") String bizType,@RequestBody BizSalesOutPage bizSalesOutPage) {
+		if (bizSalesOutPage.getBizSalesOutDetailList().size()<=0)
+		{
+			return Result.error("请添加明细");
+		}
 		BizSalesOut bizSalesOut = new BizSalesOut();
 		BeanUtils.copyProperties(bizSalesOutPage, bizSalesOut);
+		if (SysUtils.izNewNote(bizSalesOutPage.getBizNo()))
+		{
+			//String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"biz_purchase_in",SysStatusEnum.NOTE_PO_IN.getValue());
+			String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"biz_sales_out",bizType.trim().toUpperCase());
+			bizSalesOut.setBizNo(newBizNo);
+		}
+		//必须要给，否则无法计算库存，入库和退货用同一个组件
+		bizSalesOut.setBizType(bizType.toUpperCase().trim());
 		bizSalesOutService.saveMain(bizSalesOut, bizSalesOutPage.getBizSalesOutDetailList());
 		return Result.ok("添加成功！");
 	}

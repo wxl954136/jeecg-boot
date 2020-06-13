@@ -122,11 +122,15 @@ public class SysUtils {
      */
     public static Integer getNoteAlte( String bizType){
         Integer ALTE = 1;
-        if(SysStatusEnum.NOTE_PO_IN.getValue().equalsIgnoreCase(bizType))
+        if(SysStatusEnum.NOTE_PO_IN.getValue().equalsIgnoreCase(bizType) ||
+                SysStatusEnum.NOTE_SALES_BACK.getValue().equalsIgnoreCase(bizType)
+        )
         {
             ALTE = 1;
         }
-        if(SysStatusEnum.NOTE_PO_BACK.getValue().equalsIgnoreCase(bizType))
+        if(SysStatusEnum.NOTE_PO_BACK.getValue().equalsIgnoreCase(bizType) ||
+           SysStatusEnum.NOTE_SALES_OUT.getValue().equalsIgnoreCase(bizType)
+        )
         {
             ALTE = -1;
         }

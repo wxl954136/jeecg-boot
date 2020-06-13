@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: 销售主表
  * @Author: jeecg-boot
- * @Date:   2020-06-12
+ * @Date:   2020-06-13
  * @Version: V1.0
  */
 public interface BizSalesOutMapper extends BaseMapper<BizSalesOut> {

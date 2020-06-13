@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description: 销售明细表
  * @Author: jeecg-boot
- * @Date:   2020-06-12
+ * @Date:   2020-06-13
  * @Version: V1.0
  */
 @ApiModel(value="biz_sales_out对象", description="销售主表")
@@ -50,7 +50,7 @@ public class BizSalesOutDetail implements Serializable {
 	private String sysOrgCode;
 	/**头表关联*/
 	@ApiModelProperty(value = "头表关联")
-	private String headid;
+	private String headId;
 	/**单据类型*/
 	@Excel(name = "单据类型", width = 15)
 	@ApiModelProperty(value = "单据类型")
@@ -84,4 +84,8 @@ public class BizSalesOutDetail implements Serializable {
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")
 	private String gsdm;
+	/**删除标记*/
+	@Excel(name = "删除标记", width = 15)
+	@ApiModelProperty(value = "删除标记")
+	private String delFlag;
 }
