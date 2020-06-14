@@ -3,7 +3,7 @@
 <mapper namespace="org.jeecg.modules.system.core.mapper.CoreCostSkuMapper">
 
     <!-- 总的集合供参考-->
-    <resultMap id="idReference" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+    <resultMap id="idReference" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="id" property="id" jdbcType="VARCHAR"/>
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="biz_date" property="bizDate" jdbcType="TIMESTAMP"/>
@@ -12,25 +12,23 @@
         <result column="price" property="price" jdbcType="NUMERIC"/>
     </resultMap>
 
-    <resultMap id="idAwaitCalCostSkuAndDate" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+    <resultMap id="idAwaitCalCostSkuAndDate" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
-        <result column="price" property="price" jdbcType="NUMERIC"/>
     </resultMap>
     <!--取出所有待计算成本的sku及日期 -->
     <select id="getAwaitCalCostSkuAndDate"    resultMap="idAwaitCalCostSkuAndDate">
-		 select sku_id,cost_date,cost_price as price  from core_cost_sku
-         where  cost_date &gt;= #{costDate}
-         and sku_id in (
-            <foreach collection="skuIds" index="index" item="id" open="(" separator="," close=")">
+		 select sku_id,biz_date as cost_date from biz_flow_sku
+         where  biz_date &gt;= #{costDate}
+         and sku_id in
+        <foreach collection="skuIds" index="index" item="id" open="(" separator="," close=")">
                 #{id}
-            </foreach>
-         )
-        <!-- and sku_id = #{skuIds} -->
+        </foreach>
          and gsdm = #{gsdm}
-         order by sku_id asc ,cost_date asc
+         group by sku_id, biz_date
+         order by sku_id asc ,biz_date asc
     </select>
-    <resultMap id="idYesterdayStockQty" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+    <resultMap id="idYesterdayStockQty" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
     </resultMap>
@@ -42,7 +40,7 @@
         and del_flag =  '0'
         and gsdm = #{gsdm}
     </select>
-    <resultMap id="idYesterdayCostPrice" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+    <resultMap id="idYesterdayCostPrice" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="price" property="price" jdbcType="TIMESTAMP"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
@@ -58,7 +56,7 @@
          limit 0,1
     </select>
 
-    <resultMap id="idTodayPurchaseTotalQtyAndPrice" type="org.jeecg.modules.system.core.entity.CoreCostSku" >
+    <resultMap id="idTodayPurchaseTotalQtyAndPrice" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="price" property="price" jdbcType="TIMESTAMP"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>

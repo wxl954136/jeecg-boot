@@ -1,11 +1,9 @@
 package org.jeecg.modules.system.core.utils;
 
-import org.jeecg.modules.system.core.entity.BizFlowSku;
-import org.jeecg.modules.system.core.entity.CoreStockBaseDetail;
-import org.jeecg.modules.system.core.entity.CoreStockBaseHead;
-import org.jeecg.modules.system.core.entity.CoreStockSkuVo;
+import org.jeecg.modules.system.core.entity.*;
 import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -209,6 +207,30 @@ public class CoreUtils {
     }
 
 
+    //获取待计算成本的Skus
+    public static List<String> getBizSkus(List<Object>oldList,List<Object>newList){
+        List<String> resultList = new ArrayList<>();
+        List<Object>transListCollect = new ArrayList<>();
+        if (oldList != null) transListCollect.addAll(oldList);
+        if (newList != null) transListCollect.addAll(newList);
+
+
+        Map<String,String> resultMap = new HashMap<>();
+        if (transListCollect != null)
+        {
+            for(Object item:transListCollect){
+                CoreCostSku coreCostSku = new CoreCostSku();
+
+                BeanUtils.copyProperties(item,coreCostSku);
+                System.out.println("获取sku**********" +  coreCostSku.getSkuId());
+                resultMap.put(coreCostSku.getSkuId(),coreCostSku.getSkuId());//确保实体对象的名称必须为skuId
+            }
+        }
+        for(String value : resultMap.values()){
+            resultList.add(value);
+        }
+        return resultList;
+    }
 
     public static Map<String,List<Object>>  getBizFlowSkuList(List<Object>oldList, List<Object>newList)
     {

@@ -45,10 +45,7 @@ public class CoreCostSku implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "成本日期")
     private Date costDate;
-	/**月末存放yyyy-mm*/
-	@Excel(name = "月末存放yyyy-mm", width = 15)
-    @ApiModelProperty(value = "月末存放yyyy-mm")
-    private String costMonth;
+
 	/**库存*/
 	@Excel(name = "成本", width = 15)
     @ApiModelProperty(value = "成本")

@@ -7,9 +7,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.utils.SysUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Test {
     public Test()
@@ -17,14 +15,23 @@ public class Test {
 
     }
     public static void main(String args[]){
-/*
-        List<String > list = new ArrayList<>();
-        list.add("11111");
-        list.add("22222");
-        list.add("aaaa");
-        String rSkuIds = String.format("'%s'", String.join("','", list));
-        System.out.println(rSkuIds);
-*/
+        Map<String, Demo> map = new TreeMap<>();
+
+        map.put("aaa",new Demo("a","34",new Date()));
+        map.put("aaa",new Demo("ak46","34666",new Date()));
+        map.put("bbbb",new Demo("b","c45345cc",new Date()));
+        map.put("a11",new Demo("c","234234",new Date()));
+        map.put("cc",new Demo("c","56456",new Date()));
+
+
+        Set<String> keySet = map.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            Demo demo = map.get(key);
+            System.out.println(key + ":" + map.get(key) + "====" + demo.getName());
+        }
+
     }
 
     public static void testfs()

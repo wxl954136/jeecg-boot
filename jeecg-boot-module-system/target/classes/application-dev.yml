@@ -208,7 +208,9 @@ jeecg :
 #Mybatis输出sql日志
 logging:
   level:
-    org.jeecg.modules.system.mapper : debug
+    org.jeecg.modules.system.core.mapper : debug
+
+
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

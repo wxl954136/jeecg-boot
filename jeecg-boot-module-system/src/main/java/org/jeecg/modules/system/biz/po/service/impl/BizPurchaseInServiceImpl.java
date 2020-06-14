@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.biz.po.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseIn;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper;
@@ -10,6 +11,7 @@ import org.jeecg.modules.system.core.entity.BizFlowSku;
 import org.jeecg.modules.system.core.entity.CoreStockBaseDetail;
 import org.jeecg.modules.system.core.entity.CoreStockBaseHead;
 import org.jeecg.modules.system.core.service.IBizFlowSkuService;
+import org.jeecg.modules.system.core.service.ICoreCostSkuService;
 import org.jeecg.modules.system.core.service.ICoreStockSkuService;
 import org.jeecg.modules.system.core.utils.CoreUtils;
 import org.jeecg.modules.utils.SysUtils;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,7 @@ import java.util.Map;
  * @Version: V1.0
  */
 @Service
+@Slf4j
 public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, BizPurchaseIn> implements IBizPurchaseInService {
 
 	@Autowired
@@ -39,7 +43,8 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 	private BizPurchaseInDetailMapper bizPurchaseInDetailMapper;
 	@Autowired
 	private ICoreStockSkuService coreStockSkuService;
-
+	@Autowired
+	private ICoreCostSkuService coreCostSkuService;
 	@Autowired
 	private IBizFlowSkuService bizFlowSkuService;
 	
@@ -60,6 +65,11 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		saveUpdateCostStockSku(bizPurchaseIn,null,bizPurchaseInDetailList);
 
 
+
+		List<String> skuList =  CoreUtils.getBizSkus(null,(List<Object>)(Object)bizPurchaseInDetailList);
+		coreCostSkuService.setCalCoreCostSku(bizPurchaseIn.getBizDate()
+				,skuList,bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
 	}
 
 	@Override
@@ -68,10 +78,14 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		/**
 		 * No.1:修改保存，保存头表
 		 */
+		//计算成本时，从最小日期单据日期开始算起,因为会影响到成本
+		BizPurchaseIn oldBizPurchaseIn =bizPurchaseInMapper.selectById(bizPurchaseIn.getId());
 		bizPurchaseIn.setGsdm(SysUtils.getLoginUser().getGsdm());
 		bizPurchaseIn.setUpdateCount(SysUtils.getUpdateCount(bizPurchaseIn.getUpdateCount()));
 		bizPurchaseIn.setDelFlag("0"); //默认不删除
 		bizPurchaseInMapper.updateById(bizPurchaseIn);
+
+
 
 		//取旧入库数量
 		List<BizPurchaseInDetail> oldBizPurChaseInDetail = bizPurchaseInDetailMapper.selectByMainId(bizPurchaseIn.getId());
@@ -97,11 +111,23 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		/**
 		 * No.6保存数据至成本表
 		 */
+		log.info("UPD:开始计算成本一定要放至最后");
 
 
+		 List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldBizPurChaseInDetail,(List<Object>)(Object)bizPurchaseInDetailList);
+
+		System.out.println("新日期:============" +bizPurchaseIn.getBizDate() );
+		System.out.println("旧日期:============" +oldBizPurchaseIn.getBizDate() );
+		 Date calCostDate = (bizPurchaseIn.getBizDate().compareTo(oldBizPurchaseIn.getBizDate())==1?oldBizPurchaseIn.getBizDate():bizPurchaseIn.getBizDate());
+		System.out.println("算法后的日期:============" +calCostDate);
+		 coreCostSkuService.setCalCoreCostSku(calCostDate
+				 ,skuList,bizPurchaseIn.getBizType(),
+				 bizPurchaseIn.getGsdm());
+		log.info("UPD:结束 计算成本");
 		/**
 		 * No.7保存数据至成本往来单位交易表acc_trade_amount
 		 */
+
 
 
 	}
@@ -121,6 +147,11 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 
 
 		saveUpdateCostStockSku(bizPurchaseIn,oldItemList,null);
+
+		List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldItemList,null);
+		coreCostSkuService.setCalCoreCostSku(bizPurchaseIn.getBizDate()
+				,skuList,bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
 	}
 
 	@Override

@@ -16,7 +16,9 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface CoreCostSkuMapper extends BaseMapper<CoreCostSku> {
-
+    /**
+     * 日末计算法 (昨库存 * 昨天成本  + 今天采购数量*今天采购金额 )/ （昨天库存 ＋　今天采购）
+     */
     //CoreBizEntity统一使用此辅助类
     /**
      * 获取指定商品所有待计算成本的日期 ，一次性可以取N个商品
@@ -25,9 +27,6 @@ public interface CoreCostSkuMapper extends BaseMapper<CoreCostSku> {
      * @param gsdm
      * @return
      */
-    //String ids = String.format("'%s'", String.join("','", userIds));
-    //		// 1. 删除用户
-    //		int line = userMapper.deleteLogicDeleted(ids);
     List<CoreBizEntity> getAwaitCalCostSkuAndDate(@Param("costDate")String costDate, @Param("skuIds")List<String> skuIds, @Param("gsdm")String gsdm);
 
     /**
@@ -62,8 +61,6 @@ public interface CoreCostSkuMapper extends BaseMapper<CoreCostSku> {
      * 彻底删除待被重算成本的成本记录
      */
     int deleteCoreCostSku(@Param("costDate") String costDate,@Param("skuIds") String skuIds,@Param("gsdm") String gsdm);
-    /**
-     * (昨库存 * 昨天成本  + 今天采购数量*今天采购金额 )/ （昨天库存 ＋　今天采购）
-     */
+
 
 }

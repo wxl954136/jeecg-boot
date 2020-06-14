@@ -1,6 +1,7 @@
 package org.jeecg.modules.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
@@ -14,10 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class SysUtils {
 
@@ -186,6 +184,7 @@ public class SysUtils {
      * @param fieldName
      * @return
      */
+
     public static Object getClazzFieldValue(Class clazz,Object object,String fieldName)
     {
         Object result = null;
@@ -205,5 +204,32 @@ public class SysUtils {
             }
         }catch(Exception eg){}
         return result;
+    }
+
+    /**
+     *
+     * @param mapObj 同时key自带去重，特别注意，必须TreeMap
+     * @param orderBy asc升序，desc降序
+     * @return
+     */
+    public static Map<String,Object> getMapOrderByKey(Map<String, ?> mapObj, String orderBy)
+    {
+        Map<String, Object> map = new TreeMap<String, Object>(
+                (obj1, obj2) -> {
+                    // 升序排序
+                    if (orderBy.trim().equalsIgnoreCase("asc"))   return obj1.compareTo(obj2);
+                    else if (orderBy.trim().equalsIgnoreCase("desc")) return obj2.compareTo(obj1);
+                    return obj1.compareTo(obj2);  //都不是按升序
+                });
+
+
+
+        Set<String> keySet = mapObj.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            map.put(key,map.get(key));
+        }
+        return map;
     }
 }
