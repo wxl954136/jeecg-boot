@@ -52,6 +52,8 @@ public class CoreCostSku implements Serializable {
     private BigDecimal costPrice;
 
 
+    @ApiModelProperty(value = "成本类型")
+    private String costType;
 	/**公司代码*/
 	@Excel(name = "公司代码", width = 15)
     @ApiModelProperty(value = "公司代码")

@@ -96,10 +96,8 @@ public class BizSalesOutController {
 	@ApiOperation(value="销售主表-添加", notes="销售主表-添加")
 	@PostMapping(value = "/add/{bizType}")
 	public Result<?> add(@PathVariable("bizType") String bizType,@RequestBody BizSalesOutPage bizSalesOutPage) {
-		if (bizSalesOutPage.getBizSalesOutDetailList().size()<=0)
-		{
-			return Result.error("请添加明细");
-		}
+		if (bizSalesOutPage.getBizSalesOutDetailList().size()<=0) return Result.error("请添加明细");
+
 		BizSalesOut bizSalesOut = new BizSalesOut();
 		BeanUtils.copyProperties(bizSalesOutPage, bizSalesOut);
 		if (SysUtils.izNewNote(bizSalesOutPage.getBizNo()))
@@ -124,6 +122,8 @@ public class BizSalesOutController {
 	@ApiOperation(value="销售主表-编辑", notes="销售主表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody BizSalesOutPage bizSalesOutPage) {
+		if (bizSalesOutPage.getBizSalesOutDetailList().size()<=0) return Result.error("请添加明细");
+
 		BizSalesOut bizSalesOut = new BizSalesOut();
 		BeanUtils.copyProperties(bizSalesOutPage, bizSalesOut);
 		BizSalesOut bizSalesOutEntity = bizSalesOutService.getById(bizSalesOut.getId());

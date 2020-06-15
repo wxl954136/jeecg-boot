@@ -70,6 +70,9 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		coreCostSkuService.setCalCoreCostSku(bizPurchaseIn.getBizDate()
 				,skuList,bizPurchaseIn.getBizType(),
 				bizPurchaseIn.getGsdm());
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(bizPurchaseIn.getBizDate()
+				, skuList, bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
 	}
 
 	@Override
@@ -114,15 +117,17 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		log.info("UPD:开始计算成本一定要放至最后");
 
 
-		 List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldBizPurChaseInDetail,(List<Object>)(Object)bizPurchaseInDetailList);
+		List<String> skuList = CoreUtils.getBizSkus((List<Object>) (Object) oldBizPurChaseInDetail, (List<Object>) (Object) bizPurchaseInDetailList);
+		Date calCostDate = (bizPurchaseIn.getBizDate().compareTo(oldBizPurchaseIn.getBizDate()) == 1 ? oldBizPurchaseIn.getBizDate() : bizPurchaseIn.getBizDate());
+		//计算日末
+		coreCostSkuService.setCalCoreCostSku(calCostDate
+				, skuList, bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
+		//计算月末
 
-		System.out.println("新日期:============" +bizPurchaseIn.getBizDate() );
-		System.out.println("旧日期:============" +oldBizPurchaseIn.getBizDate() );
-		 Date calCostDate = (bizPurchaseIn.getBizDate().compareTo(oldBizPurchaseIn.getBizDate())==1?oldBizPurchaseIn.getBizDate():bizPurchaseIn.getBizDate());
-		System.out.println("算法后的日期:============" +calCostDate);
-		 coreCostSkuService.setCalCoreCostSku(calCostDate
-				 ,skuList,bizPurchaseIn.getBizType(),
-				 bizPurchaseIn.getGsdm());
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(calCostDate
+				, skuList, bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
 		log.info("UPD:结束 计算成本");
 		/**
 		 * No.7保存数据至成本往来单位交易表acc_trade_amount
@@ -151,6 +156,9 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldItemList,null);
 		coreCostSkuService.setCalCoreCostSku(bizPurchaseIn.getBizDate()
 				,skuList,bizPurchaseIn.getBizType(),
+				bizPurchaseIn.getGsdm());
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(bizPurchaseIn.getBizDate()
+				, skuList, bizPurchaseIn.getBizType(),
 				bizPurchaseIn.getGsdm());
 	}
 

@@ -28,6 +28,7 @@ import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.jeecg.modules.system.vo.SysUserQueryVo;
+import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -94,10 +95,10 @@ public class LoginController {
 		//update-end-author:taoyan date:20190828 for:校验验证码
 
 		//1. 校验用户是否有效
-		System.out.println("x1===============" + username);
-		SysUser sysUser = sysUserService.getUserByName(username);
-//		SysUser sysUser = sysUserService.gainUserByName(new SysUserQueryVo(username,gsdm));
 
+		SysUser sysUser = sysUserService.getUserByName(username);
+
+		//设定系统级成本模式，刚帐套时指定
 
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
@@ -119,6 +120,7 @@ public class LoginController {
 		}
 
 		//用户登录信息
+		sysUser.setCostSystemType(SysStatusEnum.COST_SYS_DAYEND.getValue());
 		userInfo(sysUser, result);
 		sysBaseAPI.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
 

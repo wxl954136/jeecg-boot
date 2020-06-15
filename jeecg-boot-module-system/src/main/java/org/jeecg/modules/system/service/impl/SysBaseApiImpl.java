@@ -39,6 +39,7 @@ import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.utils.SysStatusEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -129,9 +130,14 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		LoginUser loginUser = new LoginUser();
 		SysUser sysUser = userMapper.getUserByName(username);
+
 		if(sysUser==null) {
 			return null;
 		}
+		//系统级的成本，在这里给初始值，先给个默认值
+		log.info("LoginUser和SysUser的相互转换");
+		sysUser.setCostSystemType(SysStatusEnum.COST_SYS_DAYEND.getValue());
+
 		BeanUtils.copyProperties(sysUser, loginUser);
 		return loginUser;
 	}

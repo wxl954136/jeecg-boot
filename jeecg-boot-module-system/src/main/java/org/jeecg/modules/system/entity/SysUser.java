@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -193,4 +194,12 @@ public class SysUser implements Serializable {
      * 更新人
      */
     private String gsdm;
+
+
+    /**
+     *成本类型
+     */
+    @Transient
+    private String costSystemType;
+
 }

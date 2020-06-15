@@ -132,7 +132,10 @@ public class BizPurchaseInController {
 	@ApiOperation(value="采购信息主表-编辑", notes="采购信息主表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody BizPurchaseInPage bizPurchaseInPage) {
-
+		if (bizPurchaseInPage.getBizPurchaseInDetailList().size()<=0)
+		{
+			return Result.error("请添加明细");
+		}
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
 		BizPurchaseIn bizPurchaseInEntity = bizPurchaseInService.getById(bizPurchaseIn.getId());

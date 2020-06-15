@@ -116,4 +116,10 @@ public class LoginUser {
 	 * gsdm
 	 */
 	private String gsdm;
+
+
+	/**
+	 * costType，成本大类别  DAYEND,MONTHEND
+	 */
+	private String costSystemType;
 }

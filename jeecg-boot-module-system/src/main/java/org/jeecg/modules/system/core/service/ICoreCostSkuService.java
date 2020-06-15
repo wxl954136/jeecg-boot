@@ -30,8 +30,6 @@ public interface ICoreCostSkuService extends IService<CoreCostSku> {
      * @param costDate 需要计算成本的开始日期,注意Date需要Format:yyyy-MM的格式
      * @param skuIds 待计算的所有商品
      * @param bizType 当前业务单据类型
-     * select sku_id, date_format(cost_date, '%Y-%m') as s from core_cost_sku
-     * where date_format(cost_date, '%Y-%m') = '2020-06'
      */
     void setCalCoreCostSkuBasisMonth(Date costDate, List<String> skuIds, String bizType, String gsdm);
 

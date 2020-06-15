@@ -64,6 +64,11 @@ public class AccPayableDetail implements Serializable {
 	@Excel(name = "备注", width = 15)
 	@ApiModelProperty(value = "备注")
 	private String memo;
+
+	/**单据类型*/
+	@Excel(name = "单据类型", width = 15)
+	@ApiModelProperty(value = "单据类型")
+	private String bizType;
 	/**乐观锁*/
 	@Excel(name = "乐观锁", width = 15)
 	@ApiModelProperty(value = "乐观锁")

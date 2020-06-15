@@ -8,6 +8,12 @@ package org.jeecg.modules.utils;
  */
 public enum  SysStatusEnum {
 
+    /**
+     * 大类成本方式，日末/月末
+     */
+    COST_SYS_DAYEND("日末权加平均", "DAYEND"),
+    COST_SYS_MONTHEND("月末权加平均", "MONTHEND"),
+
     /** 成本讲价方式 */
     COST_AVER("加权平均", 0),
     COST_SINGLE("个别计价",1),

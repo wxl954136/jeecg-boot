@@ -12,6 +12,7 @@
         <result column="price" property="price" jdbcType="NUMERIC"/>
     </resultMap>
 
+    <!-- 日末加权平均算 start ******************************************************* -->
     <resultMap id="idAwaitCalCostSkuAndDate" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
@@ -39,26 +40,28 @@
         and sku_id = #{skuId}
         and del_flag =  '0'
         and gsdm = #{gsdm}
+        group by sku_id
     </select>
     <resultMap id="idYesterdayCostPrice" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
-        <result column="price" property="price" jdbcType="TIMESTAMP"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
     </resultMap>
-    <!--取出昨天的成本 -->
+    <!--取出昨天的成本(日末加权平均) -->
     <select id="getYesterdayCostPrice"    resultMap="idYesterdayCostPrice">
          select sku_id,cost_date,cost_price as price from core_cost_sku
          where 1=1
          and cost_date  &lt; #{costDate}
          and sku_id = #{skuId}
          and gsdm = #{gsdm}
+         and cost_type ='DAYEND'
          order by cost_date desc
          limit 0,1
     </select>
 
     <resultMap id="idTodayPurchaseTotalQtyAndPrice" type="org.jeecg.modules.system.core.entity.CoreBizEntity" >
         <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
-        <result column="price" property="price" jdbcType="TIMESTAMP"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
         <result column="cost_date" property="costDate" jdbcType="TIMESTAMP"/>
     </resultMap>
     <!--取出当天的采购数量及采购总金额 -->
@@ -72,12 +75,97 @@
         group by sku_id
     </select>
 
-    <!-- 彻底删除待被计算的成本,可以不加公司代码 -->
+    <!-- 彻底删除待被计算的成本,日末加权平均) -->
     <delete id="deleteCoreCostSku">
 		delete  from  core_cost_sku
 		where sku_id  in (${skuIds})
 		and cost_date &gt;= #{costDate}
 		and gsdm = #{gsdm}
+		and cost_type = 'DAYEND'
 	</delete>
+    <!-- 日末加权平均算 end ******************************************************* -->
+
+
+
+
+
+
+
+
+
+    <!-- 月末加权平均算 start &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+    <resultMap id="idMonthAwaitCalCostSkuAndDate" type="org.jeecg.modules.system.core.entity.CoreBizMonthEntity" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="cost_date" property="costDate" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--取出所有待计算成本的sku及日期 -->
+    <select id="getMonthAwaitCalCostSkuAndDate"    resultMap="idMonthAwaitCalCostSkuAndDate">
+        select sku_id,date_format(biz_date, '%Y-%m') as cost_date from biz_flow_sku
+        where  date_format(biz_date, '%Y-%m') &gt;= #{costDate}
+        and sku_id in
+        <foreach collection="skuIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and gsdm = #{gsdm}
+        group by sku_id, date_format(biz_date, '%Y-%m')
+        order by sku_id asc ,date_format(biz_date, '%Y-%m') asc
+    </select>
+    <resultMap id="idMonthYesterdayStockQty" type="org.jeecg.modules.system.core.entity.CoreBizMonthEntity" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="cost_date" property="costDate" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--取出上月即昨日库存结存 建议加一个库存结存表，即截止到每天的库存，然后可以直接取库存，效率更高-->
+    <select id="getMonthYesterdayStockQty"    resultMap="idMonthYesterdayStockQty">
+        select sku_id,sum(qty) as qty  from biz_flow_sku
+        where   date_format(biz_date, '%Y-%m')   &lt; #{bizDate}
+        and sku_id = #{skuId}
+        and del_flag =  '0'
+        and gsdm = #{gsdm}
+        group by sku_id
+    </select>
+    <resultMap id="idMonthYesterdayCostPrice" type="org.jeecg.modules.system.core.entity.CoreBizMonthEntity" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
+        <result column="cost_date" property="costDate" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--取出上月即昨天的成本(月末加权平均) -->
+    <select id="getMonthYesterdayCostPrice"    resultMap="idMonthYesterdayCostPrice">
+         select sku_id,date_format(cost_date, '%Y-%m')  as cost_date ,cost_price as price from core_cost_sku
+         where 1=1
+         and date_format(cost_date, '%Y-%m')  &lt; #{costDate}
+         and sku_id = #{skuId}
+         and gsdm = #{gsdm}
+         and cost_type ='MONTHEND'
+         order by date_format(cost_date, '%Y-%m') desc
+         limit 0,1
+    </select>
+
+    <resultMap id="idMonthTodayPurchaseTotalQtyAndPrice" type="org.jeecg.modules.system.core.entity.CoreBizMonthEntity" >
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="NUMERIC"/>
+        <result column="cost_date" property="costDate" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--取出当月即天的采购数量及采购总金额 -->
+    <select id="getMonthTodayPurchaseTotalQtyAndPrice"    resultMap="idMonthTodayPurchaseTotalQtyAndPrice">
+        select sku_id,sum(qty)  as qty ,sum(qty*price) as price from biz_flow_sku
+        where date_format(biz_date, '%Y-%m')  =  #{bizDate}
+        and sku_id = #{skuId}
+        and biz_type in ('CGRK','')
+        and del_flag = '0'
+        and gsdm = #{gsdm}
+        group by sku_id
+    </select>
+
+    <!-- 彻底删除待被计算的成本,月末加权平均) -->
+    <delete id="deleteMonthCoreCostSku">
+		delete  from  core_cost_sku
+		where sku_id  in (${skuIds})
+		and date_format(cost_date, '%Y-%m') &gt;= #{costDate}
+		and gsdm = #{gsdm}
+		and cost_type = 'MONTHEND'
+	</delete>
+    <!-- 月末加权平均算 end &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+
+
 
 </mapper>

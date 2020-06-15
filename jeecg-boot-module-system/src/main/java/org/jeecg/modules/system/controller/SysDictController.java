@@ -153,9 +153,10 @@ public class SysDictController {
 						content += (sp[0]+",");
 						for (int r = 1; r<sp.length ; r++)
 						{
-							content += ("'['," + sp[r] + ",']',");
+							content += ("'[',ifnull(" + sp[r] + ",''),']',");
 						}
 						content+="'')";
+
 						params[1] = "replace(" + content + ",'[]','') ";
 					}
 				}

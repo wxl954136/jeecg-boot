@@ -3,6 +3,7 @@ package org.jeecg.modules.system.biz.so.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.system.biz.so.entity.BizSalesOut;
 import org.jeecg.modules.system.biz.so.entity.BizSalesOutDetail;
 import org.jeecg.modules.system.biz.so.mapper.BizSalesOutDetailMapper;
@@ -12,6 +13,7 @@ import org.jeecg.modules.system.core.entity.BizFlowSku;
 import org.jeecg.modules.system.core.entity.CoreStockBaseDetail;
 import org.jeecg.modules.system.core.entity.CoreStockBaseHead;
 import org.jeecg.modules.system.core.service.IBizFlowSkuService;
+import org.jeecg.modules.system.core.service.ICoreCostSkuService;
 import org.jeecg.modules.system.core.service.ICoreStockSkuService;
 import org.jeecg.modules.system.core.utils.CoreUtils;
 import org.jeecg.modules.utils.SysUtils;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,8 @@ import java.util.Map;
  * @Version: V1.0
  */
 @Service
+@Slf4j
+
 public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSalesOut> implements IBizSalesOutService {
 
 	@Autowired
@@ -41,6 +46,8 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 	private BizSalesOutDetailMapper bizSalesOutDetailMapper;
 	@Autowired
 	private ICoreStockSkuService coreStockSkuService;
+	@Autowired
+	private ICoreCostSkuService coreCostSkuService;
 
 	@Autowired
 	private IBizFlowSkuService bizFlowSkuService;
@@ -61,6 +68,13 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		//保存库存
 		saveUpdateCostStockSku(bizSalesOut,null,bizSalesOutDetailList);
 
+		List<String> skuList =  CoreUtils.getBizSkus(null,(List<Object>)(Object)bizSalesOutDetailList);
+		coreCostSkuService.setCalCoreCostSku(bizSalesOut.getBizDate()
+				,skuList,bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(bizSalesOut.getBizDate()
+				, skuList, bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
 
 	}
 
@@ -71,6 +85,7 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		 * No.1:修改保存，保存头表
 		 */
 		bizSalesOut.setGsdm(SysUtils.getLoginUser().getGsdm());
+		BizSalesOut oldBizSalesOut =bizSalesOutMapper.selectById(bizSalesOut.getId());
 		bizSalesOut.setUpdateCount(SysUtils.getUpdateCount(bizSalesOut.getUpdateCount()));
 		bizSalesOut.setDelFlag("0"); //默认不删除
 		bizSalesOutMapper.updateById(bizSalesOut);
@@ -99,7 +114,18 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		/**
 		 * No.6保存数据至成本表
 		 */
+		List<String> skuList = CoreUtils.getBizSkus((List<Object>) (Object) oldBizSalesOutDetail, (List<Object>) (Object) bizSalesOutDetailList);
+		Date calCostDate = (bizSalesOut.getBizDate().compareTo(oldBizSalesOut.getBizDate()) == 1 ? oldBizSalesOut.getBizDate() : bizSalesOut.getBizDate());
+		//计算日末
+		coreCostSkuService.setCalCoreCostSku(calCostDate
+				, skuList, bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
+		//计算月末
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(calCostDate
+				, skuList, bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
 
+		log.info("UPD:结束 计算成本");
 
 		/**
 		 * No.7保存数据至成本往来单位交易表acc_trade_amount
@@ -122,6 +148,14 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		saveUpdateBizFlowSku(bizSalesOut,oldItemList,null);
 
 		saveUpdateCostStockSku(bizSalesOut,oldItemList,null);
+
+		List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldItemList,null);
+		coreCostSkuService.setCalCoreCostSku(bizSalesOut.getBizDate()
+				,skuList,bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
+		coreCostSkuService.setCalCoreCostSkuBasisMonth(bizSalesOut.getBizDate()
+				, skuList, bizSalesOut.getBizType(),
+				bizSalesOut.getGsdm());
 	}
 
 	@Override
