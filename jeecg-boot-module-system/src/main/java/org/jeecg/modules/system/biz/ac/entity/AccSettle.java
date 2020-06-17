@@ -87,11 +87,11 @@ public class AccSettle implements Serializable {
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private String memo;
-	/**单据来源*/
-	@Excel(name = "单据来源", width = 15)
-    @ApiModelProperty(value = "单据来源")
-    private String noteSource;
 
+    /**单据来源(SYS:AUTO)*/
+    @Excel(name = "单据来源(SYS:AUTO)", width = 15)
+    @ApiModelProperty(value = "单据来源(SYS:AUTO)")
+    private String noteSource;
     @ApiModelProperty(value = "公司代码")
     private String gsdm;
 }

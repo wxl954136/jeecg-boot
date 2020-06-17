@@ -2,10 +2,12 @@ package org.jeecg.modules.system.biz.ac.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
@@ -51,18 +53,25 @@ public class AccSettleDetail implements Serializable {
 	/**头表id*/
 	@ApiModelProperty(value = "头表id")
 	private String headId;
-	/**业务单来源单据号*/
+	/**单据类型*/
+	@Excel(name = "单据类型", width = 15)
+	@ApiModelProperty(value = "单据类型")
+	private String bizType;
+	/**业务单来源单据号id*/
 	@Excel(name = "业务单来源单据号", width = 15)
 	@ApiModelProperty(value = "业务单来源单据号")
-	private String fromBizId;
-	/**单据来源单据类型*/
-	@Excel(name = "单据来源单据类型", width = 15)
-	@ApiModelProperty(value = "单据来源单据类型")
-	private String fromBizType;
-	/**业务单据号*/
-	@Excel(name = "业务单据号", width = 15)
-	@ApiModelProperty(value = "业务单据号")
-	private String fromBizNo;
+	private String payableId;
+	@Transient
+	@TableField(exist = false)
+	private String payableBizNo;
+
+
+	//印刷忽略该字段，但是必须存在，这样在update/insert时，不需要此字段
+	@Transient
+	@TableField(exist = false)
+	private String traderName;
+
+
 	/**结算金额*/
 	@Excel(name = "结算金额", width = 15)
 	@ApiModelProperty(value = "结算金额")

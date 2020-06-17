@@ -6,6 +6,7 @@ import org.jeecg.modules.system.biz.ac.mapper.AccPayableDetailMapper;
 import org.jeecg.modules.system.biz.ac.mapper.AccPayableMapper;
 import org.jeecg.modules.system.biz.ac.service.IAccPayableService;
 import org.jeecg.modules.system.core.utils.CoreUtils;
+import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,32 +37,23 @@ public class AccPayableServiceImpl extends ServiceImpl<AccPayableMapper, AccPaya
 		accPayable.setGsdm(SysUtils.getLoginUser().getGsdm());
 		accPayable.setUpdateCount(SysUtils.getUpdateCount(0));
 		accPayable.setDelFlag("0");
+		accPayable.setNoteSource(SysStatusEnum.NOTE_SOURCE_SYS.getValue());
 		accPayableMapper.insert(accPayable);
 		//保存明细表
 		saveUpdateDetail(accPayable,null,accPayableDetailList);
 
-		/*
-		if(accPayableDetailList!=null && accPayableDetailList.size()>0) {
-			for(AccPayableDetail entity:accPayableDetailList) {
-				//外键设置
-				entity.setHeadId(accPayable.getId());
-				accPayableDetailMapper.insert(entity);
-			}
-		}
-		
-		 */
+
 	}
 
 	@Override
 	@Transactional
 	public void updateMain(AccPayable accPayable,List<AccPayableDetail> accPayableDetailList) {
 
-//		AccPayable oldAccPayable =accPayableMapper.selectById(accPayable.getId());
 		accPayable.setGsdm(SysUtils.getLoginUser().getGsdm());
 		accPayable.setUpdateCount(SysUtils.getUpdateCount(accPayable.getUpdateCount()));
 		accPayable.setDelFlag("0"); //默认不删除
 		accPayableMapper.updateById(accPayable);
-//取旧入库数量
+
 		List<AccPayableDetail> oldAccPayableDetail = accPayableDetailMapper.selectByMainId(accPayable.getId());
 		saveUpdateDetail(accPayable,oldAccPayableDetail,accPayableDetailList);
 
@@ -117,12 +109,12 @@ public class AccPayableServiceImpl extends ServiceImpl<AccPayableMapper, AccPaya
 
 	/**
 	 *saveUpdateActionData保存数据至数据库明细表
-	 * @param accPayableb
+	 * @param accPayable
 	 * @param newTransList
 	 * @param updTransList
 	 * @param delTransList
 	 */
-	public void saveUpdateActionData(AccPayable accPayableb,
+	public void saveUpdateActionData(AccPayable accPayable,
 									 List<AccPayableDetail> newTransList,
 									 List<AccPayableDetail> updTransList,
 									 List<AccPayableDetail> delTransList)
@@ -131,10 +123,10 @@ public class AccPayableServiceImpl extends ServiceImpl<AccPayableMapper, AccPaya
 		{
 			for(AccPayableDetail item  :  newTransList)
 			{
-				item.setHeadId(accPayableb.getId());
+				item.setHeadId(accPayable.getId());
 				item.setUpdateCount(SysUtils.getUpdateCount(item.getUpdateCount()));
-				item.setGsdm(accPayableb.getGsdm());
-				item.setBizType(accPayableb.getBizType());
+				item.setGsdm(accPayable.getGsdm());
+				item.setBizType(accPayable.getBizType());
 				item.setDelFlag("0");
 
 				accPayableDetailMapper.insert(item);

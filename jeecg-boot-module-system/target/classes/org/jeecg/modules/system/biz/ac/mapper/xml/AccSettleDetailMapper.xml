@@ -6,11 +6,21 @@
 		DELETE 
 		FROM  acc_settle_detail 
 		WHERE
-			 head_id = #{mainId} 	</delete>
+			 head_id = #{mainId}
+	</delete>
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.system.biz.ac.entity.AccSettleDetail">
 		SELECT * 
 		FROM  acc_settle_detail
 		WHERE
-			 head_id = #{mainId} 	</select>
+			 head_id = #{mainId}
+	</select>
+
+	<select id="selectByPayableId"  resultType="org.jeecg.modules.system.biz.ac.entity.AccSettleDetail">
+        select * from  acc_settle_detail
+        where payable_id = #{payableId}
+        and del_flag = '0'
+        and gsdm = #{gsdm}
+    </select>
+
 </mapper>

@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.modules.system.mapper.SysCommonMapper;
+import org.jeecg.modules.utils.SysStatusEnum;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,7 +60,8 @@ public class AccSettleController {
 	private IAccSettleService accSettleService;
 	@Autowired
 	private IAccSettleDetailService accSettleDetailService;
-	
+	 @Autowired
+	 SysCommonMapper sysCommonMapper;
 	/**
 	 * 分页列表查询
 	 *
@@ -69,8 +73,9 @@ public class AccSettleController {
 	 */
 	@AutoLog(value = "收付款结算头表-分页列表查询")
 	@ApiOperation(value="收付款结算头表-分页列表查询", notes="收付款结算头表-分页列表查询")
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/list/{bizType}")
 	public Result<?> queryPageList(AccSettle accSettle,
+								   @PathVariable("bizType") String bizType,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
@@ -88,10 +93,19 @@ public class AccSettleController {
 	 */
 	@AutoLog(value = "收付款结算头表-添加")
 	@ApiOperation(value="收付款结算头表-添加", notes="收付款结算头表-添加")
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody AccSettlePage accSettlePage) {
+	@PostMapping(value = "/add/{bizType}")
+	public Result<?> add(@PathVariable("bizType") String bizType,@RequestBody AccSettlePage accSettlePage) {
+		if (accSettlePage.getAccSettleDetailList().size()<=0) 	return Result.error("请添加明细");
 		AccSettle accSettle = new AccSettle();
 		BeanUtils.copyProperties(accSettlePage, accSettle);
+
+		if (SysUtils.izNewNote(accSettlePage.getBizNo()))
+		{
+			String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"acc_settle",bizType.trim().toUpperCase());
+			accSettle.setBizNo(newBizNo);
+		}
+		accSettle.setBizType(bizType.toUpperCase().trim());
+		accSettle.setNoteSource(SysStatusEnum.NOTE_SOURCE_SYS.getValue());
 		accSettleService.saveMain(accSettle, accSettlePage.getAccSettleDetailList());
 		return Result.ok("添加成功！");
 	}

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.bank.mapper.SysBankMapper">
-
+    <select id="selectByName"  resultType="org.jeecg.modules.system.bank.entity.SysBank">
+        select * from  sys_bank
+        where bank_name = #{bankName}
+        and del_flag = '0'
+        and enable_flag = '1'
+        and gsdm = #{gsdm}
+    </select>
 </mapper>

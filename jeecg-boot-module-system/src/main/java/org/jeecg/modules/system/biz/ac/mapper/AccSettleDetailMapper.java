@@ -16,4 +16,7 @@ public interface AccSettleDetailMapper extends BaseMapper<AccSettleDetail> {
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
 	public List<AccSettleDetail> selectByMainId(@Param("mainId") String mainId);
+
+	public List<AccSettleDetail> selectByPayableId(@Param("payableId") String payableId,@Param("gsdm") String gsdm);
+
 }

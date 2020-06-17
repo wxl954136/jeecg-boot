@@ -35,6 +35,10 @@ public enum  SysStatusEnum {
     NOTE_PAYABLE("应付款","YFK"),
     NOTE_RECEIVABLE("应收款","YSK"),
 
+    NOTE_SETTLE_IN("收款单","SKD"),
+    NOTE_SETTLE_OUT("付收款","FKD"),
+
+
     NOTE_SOURCE_AUTO("单据来源-系统自动产生","AUTO"),
     NOTE_SOURCE_SYS("单据来源-系统","SYS"),
 

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.modules.system.mapper.SysCommonMapper;
+import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -78,10 +79,7 @@ public class AccPayableController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-//		if (bizPurchaseInPage.getBizPurchaseInDetailList().size()<=0)
-//		{
-//			return Result.error("请添加明细");
-//		}
+
 		QueryWrapper<AccPayable> queryWrapper = QueryGenerator.initQueryWrapper(accPayable, req.getParameterMap());
 		Page<AccPayable> page = new Page<AccPayable>(pageNo, pageSize);
 		IPage<AccPayable> pageList = accPayableService.page(page, queryWrapper);
@@ -102,14 +100,16 @@ public class AccPayableController {
 		if (accPayablePage.getAccPayableDetailList().size()<=0) 	return Result.error("请添加明细");
 
 		AccPayable accPayable = new AccPayable();
+
 		BeanUtils.copyProperties(accPayablePage, accPayable);
 
 		if (SysUtils.izNewNote(accPayablePage.getBizNo()))
-		{
-			String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"acc_payable",bizType.trim().toUpperCase());
-			accPayable.setBizNo(newBizNo);
-		}
+        {
+            String newBizNo = SysUtils.getNewNoteNo(sysCommonMapper,"acc_payable",bizType.trim().toUpperCase());
+            accPayable.setBizNo(newBizNo);
+        }
 		accPayable.setBizType(bizType.toUpperCase().trim());
+		accPayable.setNoteSource(SysStatusEnum.NOTE_SOURCE_SYS.getValue());
 		accPayableService.saveMain(accPayable, accPayablePage.getAccPayableDetailList());
 		return Result.ok("添加成功！");
 	}

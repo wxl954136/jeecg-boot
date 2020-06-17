@@ -13,4 +13,11 @@
 		FROM  acc_payable_detail
 		WHERE
 			 head_id = #{mainId} 	</select>
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE
+		FROM  acc_payable_detail
+		WHERE
+			 head_id = #{mainId} 	</delete>
+
 </mapper>

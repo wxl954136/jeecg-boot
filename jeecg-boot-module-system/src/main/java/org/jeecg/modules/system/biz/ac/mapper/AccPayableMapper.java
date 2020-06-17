@@ -13,5 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @Version: V1.0
  */
 public interface AccPayableMapper extends BaseMapper<AccPayable> {
+    AccPayable selectByFromBizId(@Param("fromBizId")String fromBizId,@Param("gsdm")String  gsdm);
+
+    int deleteByFromBizId(@Param("fromBizId")String fromBizId,@Param("gsdm")String  gsdm);
 
 }

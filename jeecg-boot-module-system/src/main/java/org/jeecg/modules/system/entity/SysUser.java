@@ -2,6 +2,7 @@ package org.jeecg.modules.system.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -200,6 +201,7 @@ public class SysUser implements Serializable {
      *成本类型
      */
     @Transient
+    @TableField(exist = false)
     private String costSystemType;
 
 }
