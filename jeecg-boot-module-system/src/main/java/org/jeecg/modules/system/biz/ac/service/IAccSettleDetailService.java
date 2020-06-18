@@ -1,5 +1,7 @@
 package org.jeecg.modules.system.biz.ac.service;
 
+import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail;
 import org.jeecg.modules.system.biz.ac.entity.AccSettleDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
@@ -13,4 +15,6 @@ import java.util.List;
 public interface IAccSettleDetailService extends IService<AccSettleDetail> {
 
 	public List<AccSettleDetail> selectByMainId(String mainId);
+
+
 }

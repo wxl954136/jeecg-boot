@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail;
+import org.jeecg.modules.system.biz.ac.service.IAccSettleFromPayableService;
 import org.jeecg.modules.system.mapper.SysCommonMapper;
 import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
@@ -60,6 +62,8 @@ public class AccSettleController {
 	private IAccSettleService accSettleService;
 	@Autowired
 	private IAccSettleDetailService accSettleDetailService;
+	 @Autowired
+	 private IAccSettleFromPayableService  accSettleFromPayableService;
 	 @Autowired
 	 SysCommonMapper sysCommonMapper;
 	/**
@@ -274,5 +278,21 @@ public class AccSettleController {
       }
       return Result.ok("文件导入失败！");
     }
-
+	 @AutoLog(value = "获取待收款及待付款明细-分页列表查询")
+	 @ApiOperation(value="获取待收款及待付款明细-分页列表查询", notes="获取待收款及待付款明细-分页列表查询")
+	 @GetMapping(value = "/selectAwaitSettlelist")
+	 public Result<List<AccPayableSettleBaseDetail>> queryPageList() {
+		 Result<List<AccPayableSettleBaseDetail>> result = new Result<>();
+		 List<AccPayableSettleBaseDetail> listResult = accSettleFromPayableService.selectPayableAmount(null,null,null);
+		 result.setResult(listResult);
+		 try {
+			 result.setSuccess(true);
+			 result.setResult(listResult);
+			 return result;
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.setSuccess(false);
+			 return result;
+		 }
+	 }
 }

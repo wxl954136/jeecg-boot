@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.biz.ac.mapper.AccSettleFromPayableMapper">
+
+
+	<!-- 获取应付款项（付款结算时，选择单据） -->
+
+	<resultMap id="idSelectPayableAmount" type="org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail" >
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="biz_no" property="bizNo" jdbcType="VARCHAR"/>
+		<result column="trader_id" property="traderId" jdbcType="VARCHAR"/>
+		<result column="trader_name" property="traderName" jdbcType="VARCHAR"/>
+		<result column="source_amount" property="sourceAmount" jdbcType="NUMERIC"/>
+		<result column="target_amount" property="targetAmount" jdbcType="NUMERIC"/>
+		<result column="diff_amount" property="diffAmount" jdbcType="NUMERIC"/>
+	</resultMap>
+	<select id="selectPayableAmount"   resultMap="idSelectPayableAmount">
+		select a.id,b.biz_no,a.trader_id, x.name as trader_name,a.source_amount,ifnull(c.target_amount,0) as target_amount ,
+		(a.source_amount - ifnull(c.target_amount,0)) diff_amount
+		from acc_payable_detail as a
+		inner join acc_payable as b
+		on a.head_id = b.id
+		inner join sys_trader as x
+		on a.trader_id = x.id
+		left join acc_settle_detail as c
+		on a.id = c.payable_id
+		and c.del_flag = '0'
+		where a.source_amount - ifnull(c.target_amount,0) &lt;&gt; 0
+		<!--
+		and   a.biz_type in
+		<foreach collection="bizTypes" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		and a.del_flag = '0'
+		and trader_id in
+		<foreach collection="traderIds" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		and b.del_flag = '0'
+		and a.gsdm = #{gsdm}
+		-->
+	</select>
+
+</mapper>

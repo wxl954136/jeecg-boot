@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.system.biz.ac.service.IAccSettleService;
+import org.jeecg.modules.system.biz.common.entity.BizCommonDetail;
+import org.jeecg.modules.system.biz.common.entity.BizCommonHead;
+
 import org.jeecg.modules.system.biz.so.entity.BizSalesOut;
 import org.jeecg.modules.system.biz.so.entity.BizSalesOutDetail;
 import org.jeecg.modules.system.biz.so.mapper.BizSalesOutDetailMapper;
@@ -24,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 采购信息主表
@@ -51,7 +52,8 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 
 	@Autowired
 	private IBizFlowSkuService bizFlowSkuService;
-
+	@Autowired
+	private IAccSettleService accSettleService;
 	@Override
 	@Transactional
 	public void saveMain(BizSalesOut bizSalesOut, List<BizSalesOutDetail> bizSalesOutDetailList) {
@@ -67,6 +69,8 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		saveUpdateBizFlowSku(bizSalesOut,null,bizSalesOutDetailList);
 		//保存库存
 		saveUpdateCostStockSku(bizSalesOut,null,bizSalesOutDetailList);
+		//往来帐
+		saveUpdateTraderAccPayableAndSettle(null,bizSalesOut,bizSalesOutDetailList);
 
 		List<String> skuList =  CoreUtils.getBizSkus(null,(List<Object>)(Object)bizSalesOutDetailList);
 		coreCostSkuService.setCalCoreCostSku(bizSalesOut.getBizDate()
@@ -111,8 +115,13 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		 */
 		saveUpdateCostStockSku(bizSalesOut,oldBizSalesOutDetail,bizSalesOutDetailList);
 
+
 		/**
-		 * No.6保存数据至成本表
+		 * No.6保存数据至成本往来单位交易表acc_trade_amount
+		 */
+		saveUpdateTraderAccPayableAndSettle(oldBizSalesOut,bizSalesOut,bizSalesOutDetailList);
+		/**
+		 * No.7保存数据至成本表
 		 */
 		List<String> skuList = CoreUtils.getBizSkus((List<Object>) (Object) oldBizSalesOutDetail, (List<Object>) (Object) bizSalesOutDetailList);
 		Date calCostDate = (bizSalesOut.getBizDate().compareTo(oldBizSalesOut.getBizDate()) == 1 ? oldBizSalesOut.getBizDate() : bizSalesOut.getBizDate());
@@ -148,6 +157,9 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		saveUpdateBizFlowSku(bizSalesOut,oldItemList,null);
 
 		saveUpdateCostStockSku(bizSalesOut,oldItemList,null);
+
+
+		saveUpdateTraderAccPayableAndSettle(bizSalesOut,null,oldItemList);
 
 		List<String> skuList =  CoreUtils.getBizSkus((List<Object>)(Object)oldItemList,null);
 		coreCostSkuService.setCalCoreCostSku(bizSalesOut.getBizDate()
@@ -298,5 +310,34 @@ public class BizSalesOutServiceImpl extends ServiceImpl<BizSalesOutMapper, BizSa
 		return true;
 	}
 
+	/**
+	 * 财务核 算模块  应收款，应付款
+	 * @param oldSalesOut
+	 * @param newSalesOut
+	 * @param detailList
+	 * @return
+	 */
+	public boolean saveUpdateTraderAccPayableAndSettle(BizSalesOut oldSalesOut, BizSalesOut newSalesOut, List<BizSalesOutDetail> detailList)
+	{
+		BizCommonHead oldBizCommonHead = new BizCommonHead();
+		if (oldSalesOut!=null)		BeanUtils.copyProperties(oldSalesOut,oldBizCommonHead);
+		else oldBizCommonHead = null;
+
+		BizCommonHead newBizCommonHead = new BizCommonHead();
+		if (newSalesOut !=null ) BeanUtils.copyProperties(newSalesOut,newBizCommonHead);
+		else newBizCommonHead = null;
+
+		List<BizCommonDetail> newCommonList = new ArrayList<>();
+		if (detailList != null && detailList.size() > 0)
+		{
+			for(BizSalesOutDetail entity:detailList){
+				BizCommonDetail commonDetail = new BizCommonDetail();
+				BeanUtils.copyProperties(entity,commonDetail);
+				newCommonList.add(commonDetail);
+			}
+		}
+		accSettleService.savePayableAndSettle(oldBizCommonHead,newBizCommonHead,newCommonList);
+		return true;
+	}
 
 }

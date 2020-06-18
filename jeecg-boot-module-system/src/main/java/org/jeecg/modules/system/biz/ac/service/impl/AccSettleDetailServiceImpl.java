@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.biz.ac.service.impl;
 
+import org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail;
 import org.jeecg.modules.system.biz.ac.entity.AccSettleDetail;
 import org.jeecg.modules.system.biz.ac.mapper.AccSettleDetailMapper;
 import org.jeecg.modules.system.biz.ac.service.IAccSettleDetailService;
@@ -24,4 +25,6 @@ public class AccSettleDetailServiceImpl extends ServiceImpl<AccSettleDetailMappe
 	public List<AccSettleDetail> selectByMainId(String mainId) {
 		return accSettleDetailMapper.selectByMainId(mainId);
 	}
+
+
 }

@@ -2,6 +2,8 @@ package org.jeecg.modules.system.biz.ac.service;
 
 import org.jeecg.modules.system.biz.ac.entity.AccPayableDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail;
+
 import java.util.List;
 
 /**
@@ -13,4 +15,5 @@ import java.util.List;
 public interface IAccPayableDetailService extends IService<AccPayableDetail> {
 
 	public List<AccPayableDetail> selectByMainId(String mainId);
+
 }

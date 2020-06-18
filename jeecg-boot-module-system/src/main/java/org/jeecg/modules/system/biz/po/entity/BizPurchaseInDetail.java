@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Date:   2020-06-02
  * @Version: V1.0
  */
+
 @ApiModel(value="biz_purchase_in对象", description="采购信息主表")
 @Data
 @TableName("biz_purchase_in_detail")

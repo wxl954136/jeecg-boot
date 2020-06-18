@@ -3,6 +3,9 @@ package org.jeecg.modules.system.biz.ac.service;
 import org.jeecg.modules.system.biz.ac.entity.AccSettleDetail;
 import org.jeecg.modules.system.biz.ac.entity.AccSettle;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.system.biz.common.entity.BizCommonDetail;
+import org.jeecg.modules.system.biz.common.entity.BizCommonHead;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -36,5 +39,13 @@ public interface IAccSettleService extends IService<AccSettle> {
 	 * 批量删除一对多
 	 */
 	public void delBatchMain(Collection<? extends Serializable> idList);
+
+	/**
+	 * 同时保存应付款和应收款
+	 * @param oldHead
+	 * @param newHead
+	 * @param newList
+	 */
+	public void savePayableAndSettle(BizCommonHead oldHead, BizCommonHead newHead, List<BizCommonDetail> newList);
 	
 }

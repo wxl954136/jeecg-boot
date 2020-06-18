@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.biz.ac.service.impl;
 
 import org.jeecg.modules.system.biz.ac.entity.AccPayableDetail;
+import org.jeecg.modules.system.biz.ac.entity.AccPayableSettleBaseDetail;
 import org.jeecg.modules.system.biz.ac.mapper.AccPayableDetailMapper;
 import org.jeecg.modules.system.biz.ac.service.IAccPayableDetailService;
 import org.springframework.stereotype.Service;
@@ -24,4 +25,6 @@ public class AccPayableDetailServiceImpl extends ServiceImpl<AccPayableDetailMap
 	public List<AccPayableDetail> selectByMainId(String mainId) {
 		return accPayableDetailMapper.selectByMainId(mainId);
 	}
+
+
 }
