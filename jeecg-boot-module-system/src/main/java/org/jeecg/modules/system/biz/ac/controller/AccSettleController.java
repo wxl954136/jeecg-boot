@@ -277,22 +277,51 @@ public class AccSettleController {
           }
       }
       return Result.ok("文件导入失败！");
+
     }
 	 @AutoLog(value = "获取待收款及待付款明细-分页列表查询")
 	 @ApiOperation(value="获取待收款及待付款明细-分页列表查询", notes="获取待收款及待付款明细-分页列表查询")
-	 @GetMapping(value = "/selectAwaitSettlelist")
-	 public Result<List<AccPayableSettleBaseDetail>> queryPageList() {
-		 Result<List<AccPayableSettleBaseDetail>> result = new Result<>();
-		 List<AccPayableSettleBaseDetail> listResult = accSettleFromPayableService.selectPayableAmount(null,null,null);
-		 result.setResult(listResult);
-		 try {
-			 result.setSuccess(true);
-			 result.setResult(listResult);
-			 return result;
-		 } catch (Exception e) {
-			 log.error(e.getMessage(), e);
-			 result.setSuccess(false);
-			 return result;
+	 @GetMapping(value = "/selectAwaitSettlelist/{bizType}")
+//	 public Result<List<AccPayableSettleBaseDetail>> queryPageList(@PathVariable("bizType") String bizType,
+	 public Result<?> queryPageList(@PathVariable("bizType") String bizType,
+																   HttpServletRequest req) {
+
+		 List<String> listTraderIds = new ArrayList<>();
+		 Map<String, String[]> mapCondition = req.getParameterMap();
+		 for(Map.Entry<String, String[]> entry : mapCondition.entrySet()){
+			 String mapKey = entry.getKey();
+			 String mapValue[] = entry.getValue();
+			 if (mapKey.equalsIgnoreCase("traderId"))
+			 {
+				 listTraderIds.add(mapValue[0]);
+			 }
 		 }
+
+
+//		 List<AccSettleDetail> accSettleDetailList = accSettleDetailService.selectByMainId(id);
+//		 IPage <AccSettleDetail> page = new Page<>();
+//		 page.setRecords(accSettleDetailList);
+//		 page.setTotal(accSettleDetailList.size());
+//		 return Result.ok(page);
+
+
+//		 Result<List<AccPayableSettleBaseDetail>> result = new Result<>();
+		 List<String> listBizTypes = new ArrayList<>();
+		 listBizTypes.add(bizType);
+		 List<AccPayableSettleBaseDetail> listResult = accSettleFromPayableService.selectPayableAmount(listTraderIds,listBizTypes,SysUtils.getLoginUser().getGsdm());
+		 IPage <AccPayableSettleBaseDetail> page = new Page<>();
+		 page.setRecords(listResult);
+		 page.setTotal(listResult.size());
+		 return Result.ok(page);
+//		 try {
+//
+//			 result.setSuccess(true);
+//			 result.setResult(listResult);
+//			 return result;
+//		 } catch (Exception e) {
+//			 log.error(e.getMessage(), e);
+//			 result.setSuccess(false);
+//			 return result;
+//		 }
 	 }
 }

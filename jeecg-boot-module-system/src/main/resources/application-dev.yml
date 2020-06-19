@@ -210,6 +210,9 @@ logging:
   level:
     org.jeecg.modules.system.core.mapper : debug,
     org.jeecg.modules.system.mapper : debug,
+    org.jeecg.modules.system.biz.ac.mapper : debug,
+
+
 
 
 #cas单点登录

@@ -148,11 +148,11 @@ public class SysTraderController extends JeecgController<SysTrader, ISysTraderSe
 	  * @return
 	  */
 	 @GetMapping("/querySysTraderList")
-		 public Result getTraderList() {
+	 public Result getTraderList() {
 		 String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
 		 SysUser loginUser = (SysUser)redisUtil.get(token);
-		 Result<Map<String, Object>> result = new Result<Map<String, Object>>();
-		 Map<String, Object> map = new HashMap<String, Object>();
+//		 Result<Map<String, Object>> result = new Result<Map<String, Object>>();
+//		 Map<String, Object> map = new HashMap<String, Object>();
 		 SysTrader sysTrader = new SysTrader();
 		 sysTrader.setGsdm(loginUser.getGsdm());
 		 return Result.ok(sysTraderService.getTraderList(sysTrader));
