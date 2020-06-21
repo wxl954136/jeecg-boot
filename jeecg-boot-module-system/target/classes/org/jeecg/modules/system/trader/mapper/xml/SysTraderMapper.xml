@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.trader.mapper.SysTraderMapper">
+
+	<resultMap id="idGetTraderList" type="org.jeecg.modules.system.trader.entity.SysTrader" >
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+		<result column="bank_address" property="bankAddress" jdbcType="VARCHAR"/>
+		<result column="bank_card_no" property="bankCardNo" jdbcType="VARCHAR"/>
+		<result column="saler_flag" property="salerFlag" jdbcType="VARCHAR"/>
+		<result column="buyer_flag" property="buyerFlag" jdbcType="VARCHAR"/>
+		<result column="contacter" property="contacter" jdbcType="VARCHAR"/>
+		<result column="tel" property="tel" jdbcType="VARCHAR"/>
+		<result column="enable_flag" property="enableFlag" jdbcType="VARCHAR"/>
+	</resultMap>
+
+    <select id="getTraderList" parameterType="Object" resultMap="idGetTraderList"  >
+		select id,
+		replace(concat(name,'[',ifnull(contacter,''),']'),'[]','') as name,
+		address,bank_address,bank_card_no,
+		saler_flag,buyer_flag,contacter,tel,enable_flag
+		from  sys_trader
+		where gsdm = #{sysTrader.gsdm}
+		and del_flag = 0
+	</select>
+</mapper>
