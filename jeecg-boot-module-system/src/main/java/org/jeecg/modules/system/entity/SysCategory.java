@@ -32,6 +32,9 @@ public class SysCategory implements Serializable {
 	/**类型名称*/
 	@Excel(name = "类型名称", width = 15)
 	private java.lang.String name;
+	/**类型名称*/
+	@Excel(name = "类型全称", width = 15)
+	private java.lang.String fullName;
 	/**类型编码*/
 	@Excel(name = "类型编码", width = 15)
 	private java.lang.String code;

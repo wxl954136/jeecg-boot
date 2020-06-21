@@ -15,6 +15,11 @@ public class SysCategoryModel {
     private java.lang.String pid;
     /**类型名称*/
     private java.lang.String name;
+    /**类型全称*/
+    private java.lang.String fullName;
+
+
+
     /**类型编码*/
     private java.lang.String code;
 
@@ -48,5 +53,12 @@ public class SysCategoryModel {
 
     public void setCode(String code) {
         this.code = code;
+    }
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }
