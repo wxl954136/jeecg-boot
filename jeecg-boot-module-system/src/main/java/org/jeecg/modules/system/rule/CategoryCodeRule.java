@@ -8,6 +8,7 @@ import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.mapper.SysCategoryMapper;
+import org.jeecg.modules.utils.SysUtils;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CategoryCodeRule implements IFillRuleHandler {
 
         String categoryPid = ROOT_PID_VALUE;
         String categoryCode = null;
+        String gsdm = SysUtils.getLoginUser().getGsdm();
 
         if (formData != null && formData.size() > 0) {
             Object obj = formData.get("pid");
@@ -43,7 +45,7 @@ public class CategoryCodeRule implements IFillRuleHandler {
          * 3.添加子节点有兄弟元素 YouBianCodeUtil.getNextYouBianCode(lastCode);
          * */
         //找同类 确定上一个最大的code值
-        LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().eq(SysCategory::getPid, categoryPid).isNotNull(SysCategory::getCode).orderByDesc(SysCategory::getCode);
+        LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().eq(SysCategory::getPid, categoryPid).eq(SysCategory::getGsdm, gsdm).isNotNull(SysCategory::getCode).orderByDesc(SysCategory::getCode);
         SysCategoryMapper baseMapper = (SysCategoryMapper) SpringContextUtils.getBean("sysCategoryMapper");
         List<SysCategory> list = baseMapper.selectList(query);
         if (list == null || list.size() == 0) {

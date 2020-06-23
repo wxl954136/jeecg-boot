@@ -83,10 +83,12 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param code
 	 * @param pid
 	 * @param hasChildField
+	 *  @param gsdm
 	 * @return
 	 */
 	@Deprecated
-	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query,@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField);
+	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query,@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField,
+										@Param("gsdm") String gsdm);
 
 	/**
 	 * 删除

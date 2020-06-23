@@ -13,6 +13,7 @@ import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.mapper.SysCategoryMapper;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,7 +97,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		}
 		if("1".equalsIgnoreCase(sysCategory.getHasChild())){
 			//这里会有多个记录集合
-			List<SysCategory> listCategorys = sysCategoryMapper.queryListSysCategoryByPid(sysCategory.getId());
+			List<SysCategory> listCategorys = sysCategoryMapper.queryListSysCategoryByPid(sysCategory.getId(),SysUtils.getLoginUser().getGsdm());
 			for (SysCategory entity:listCategorys)
 			{
 				String _fullName = parentFullName + entity.getName() + ".";
@@ -121,7 +122,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 			}
 			pid = list.get(0).getId();
 		}
-		return baseMapper.queryListByPid(pid,null);
+		return baseMapper.queryListByPid(pid,null, SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		if(oConvertUtils.isEmpty(pid)) {
 			pid = ROOT_PID_VALUE;
 		}
-		return baseMapper.queryListByPid(pid,null);
+		return baseMapper.queryListByPid(pid,null,SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override
@@ -137,12 +138,22 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		if(oConvertUtils.isEmpty(pid)) {
 			pid = ROOT_PID_VALUE;
 		}
-		return baseMapper.queryListByPid(pid,condition);
+		return baseMapper.queryListByPid(pid,condition,SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override
 	public String queryIdByCode(String code) {
-		return baseMapper.queryIdByCode(code);
+		return baseMapper.queryIdByCode(code,SysUtils.getLoginUser().getGsdm());
+	}
+
+	@Override
+	public List<SysCategory> queryListSysCategoryByPid(String pid) {
+		return sysCategoryMapper.queryListSysCategoryByPid(pid,SysUtils.getLoginUser().getGsdm());
+	}
+
+	@Override
+	public SysCategory queryByCategoryType(String category_type, String gsdm) {
+		return sysCategoryMapper.queryByCategoryType(category_type,gsdm);
 	}
 
 }

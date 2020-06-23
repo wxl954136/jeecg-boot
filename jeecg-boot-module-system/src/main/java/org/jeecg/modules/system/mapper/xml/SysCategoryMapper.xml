@@ -10,15 +10,28 @@
 			   pid as parentId
 			   from sys_category
 			where pid = #{pid}
+			and gsdm = #{gsdm}
 			<if test="query!= null">
 				<foreach collection="query.entrySet()" item="value"  index="key" >
 					and ${key} = #{value}
 				</foreach>
 			</if>
 	</select>
+
+
+	<!-- 根据类型获取当前应有记录值,如SPFL(商品分类)  -->
+	<select id="queryByCategoryType" parameterType="Object" resultType="org.jeecg.modules.system.entity.SysCategory">
+		select  * from sys_category
+		where category_type = #{category_type}
+		and gsdm = #{gsdm}
+		limit 0,1
+	</select>
+
 	<select id="queryListSysCategoryByPid" parameterType="Object" resultType="org.jeecg.modules.system.entity.SysCategory">
 		select  * from sys_category
 		where pid = #{pid}
+		and gsdm = #{gsdm}
 	</select>
+
 
 </mapper>

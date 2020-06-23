@@ -23,10 +23,10 @@ public interface SysCategoryMapper extends BaseMapper<SysCategory> {
 	 * @param pid
 	 * @return
 	 */
-	public List<TreeSelectModel> queryListByPid(@Param("pid")  String pid,@Param("query") Map<String, String> query);
-	public List<SysCategory> queryListSysCategoryByPid(@Param("pid")  String pid);
-	@Select("SELECT ID FROM sys_category WHERE CODE = #{code,jdbcType=VARCHAR}")
-	public String queryIdByCode(@Param("code")  String code);
-	
+	public List<TreeSelectModel> queryListByPid(@Param("pid")  String pid,@Param("query") Map<String, String> query,@Param("gsdm")  String gsdm);
+	public List<SysCategory> queryListSysCategoryByPid(@Param("pid")  String pid,String gsdm);
+	@Select("SELECT ID FROM sys_category WHERE CODE = #{code,jdbcType=VARCHAR} and GSDM = #{gsdm,jdbcType=VARCHAR}")
+	public String queryIdByCode(@Param("code")  String code,@Param("gsdm") String gsdm);
+	public SysCategory queryByCategoryType(@Param("category_type")  String category_type,@Param("gsdm")  String gsdm);
 
 }

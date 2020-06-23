@@ -3,6 +3,7 @@ package org.jeecg.modules.system.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
@@ -52,5 +53,14 @@ public interface ISysCategoryService extends IService<SysCategory> {
 	 * @return
 	 */
 	public String queryIdByCode(String code);
-	
+
+	/**
+	 *
+	 * @param pid
+	 * @return
+	 */
+	public List<SysCategory> queryListSysCategoryByPid( String pid);
+
+
+	public SysCategory queryByCategoryType(String category_type, String gsdm);
 }

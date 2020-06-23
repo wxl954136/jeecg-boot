@@ -43,6 +43,10 @@ public enum  SysStatusEnum {
     NOTE_SOURCE_SYS("单据来源-系统","SYS"),
 
 
+
+
+
+    CATEGORY_TYPE_SPFL("商品分类","SPFL"),
     NOTE_NEW("新单据", "NEW");
 
 

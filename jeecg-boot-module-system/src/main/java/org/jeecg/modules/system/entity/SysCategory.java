@@ -57,7 +57,9 @@ public class SysCategory implements Serializable {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private java.lang.String sysOrgCode;
-	/**是否有子节点*/
-	@Excel(name = "是否有子节点", width = 15)
+
+	private java.lang.String categoryType;
 	private java.lang.String hasChild;
+	private java.lang.String lockEnable;
+	private java.lang.String gsdm;
 }

@@ -21,6 +21,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysCategory;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -73,6 +74,8 @@ public class SysCategoryController {
 		//QueryWrapper<SysCategory> queryWrapper = QueryGenerator.initQueryWrapper(sysCategory, req.getParameterMap());
 		QueryWrapper<SysCategory> queryWrapper = new QueryWrapper<SysCategory>();
 		queryWrapper.eq("pid", sysCategory.getPid());
+		queryWrapper.eq("gsdm", SysUtils.getLoginUser().getGsdm());
+
 		//--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------end
 		
 		Page<SysCategory> page = new Page<SysCategory>(pageNo, pageSize);
@@ -102,6 +105,8 @@ public class SysCategoryController {
 	public Result<SysCategory> add(@RequestBody SysCategory sysCategory) {
 		Result<SysCategory> result = new Result<SysCategory>();
 		try {
+			sysCategory.setGsdm(SysUtils.getLoginUser().getGsdm());
+			sysCategory.setLockEnable("0");
 			sysCategoryService.addSysCategory(sysCategory);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -141,9 +146,15 @@ public class SysCategoryController {
 		if(sysCategory==null) {
 			result.error500("未找到对应实体");
 		}else {
-			boolean ok = sysCategoryService.removeById(id);
-			if(ok) {
-				result.success("删除成功!");
+			List<SysCategory> listCategorys = sysCategoryService.queryListSysCategoryByPid(id);
+			if (listCategorys.size() > 0)
+			{
+				result.error500("请删除子类别后再删除父类");
+			}else {
+				boolean ok = sysCategoryService.removeById(id);
+				if (ok) {
+					result.success("删除成功!");
+				}
 			}
 		}
 		
@@ -161,6 +172,14 @@ public class SysCategoryController {
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
+			String items[] =  ids.split(",");
+			for(int i=0 ; i < items.length;i++){
+				List<SysCategory> listCategorys = sysCategoryService.queryListSysCategoryByPid(items[0]);
+				if (listCategorys != null && listCategorys.size() > 0 ){
+					result.error500("请删除子类别后再删除父类");
+					return result;
+				}
+			}
 			this.sysCategoryService.removeByIds(Arrays.asList(ids.split(",")));
 			result.success("删除成功!");
 		}
@@ -366,10 +385,16 @@ public class SysCategoryController {
 	  * @return
 	  */
 	 @RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
-	 public Result<List<TreeSelectModel>> loadDict(@RequestParam(name="pid",required = false) String pid,@RequestParam(name="pcode",required = false) String pcode, @RequestParam(name="condition",required = false) String condition) {
-		 Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+	 public Result<List<TreeSelectModel>> loadDict(@RequestParam(name="pid",required = false) String pid,
+												   @RequestParam(name="pcode",required = false) String pcode,
+												   @RequestParam(name="categoryType",required = false) String categoryType,
+												   @RequestParam(name="condition",required = false) String condition) {
+	 	Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+	 	SysCategory entity = sysCategoryService.queryByCategoryType(categoryType,SysUtils.getLoginUser().getGsdm());
+	 	if ( null != entity ) pcode = entity.getCode();
 		 //pid如果传值了 就忽略pcode的作用
 		 if(oConvertUtils.isEmpty(pid)){
+
 		 	if(oConvertUtils.isEmpty(pcode)){
 				result.setSuccess(false);
 				result.setMessage("加载分类字典树参数有误.[null]!");
@@ -382,7 +407,6 @@ public class SysCategoryController {
 				}
 				if(oConvertUtils.isEmpty(pid)){
 					result.setSuccess(false);
-					result.setMessage("加载分类字典树参数有误.[code]!");
 					return result;
 				}
 			}
@@ -390,6 +414,7 @@ public class SysCategoryController {
 		 Map<String, String> query = null;
 		 if(oConvertUtils.isNotEmpty(condition)) {
 			 query = JSON.parseObject(condition, Map.class);
+			 query.put("gsdm",SysUtils.getLoginUser().getGsdm()); //公司代码也要加进去
 		 }
 		 List<TreeSelectModel> ls = sysCategoryService.queryListByPid(pid,query);
 		 result.setSuccess(true);
@@ -399,13 +424,13 @@ public class SysCategoryController {
 
 	 /**
 	  * 分类字典控件数据回显[表单页面]
-	  * @param key
+	  * @param ids
 	  * @return
 	  */
 	 @RequestMapping(value = "/loadDictItem", method = RequestMethod.GET)
 	 public Result<List<String>> loadDictItem(@RequestParam(name="ids") String ids) {
 		 Result<List<String>> result = new Result<>();
-		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().in(SysCategory::getId,ids);
+		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>().in(SysCategory::getId,ids).eq(SysCategory::getGsdm,SysUtils.getLoginUser().getGsdm());
 		 List<SysCategory> list = this.sysCategoryService.list(query);
 		 List<String> textList = new ArrayList<String>();
 		 for (String id : ids.split(",")) {
@@ -427,11 +452,18 @@ public class SysCategoryController {
 	  * @param code
 	  * @return
 	  */
+//	 @RequestParam(name="pid",required = false) String pid,
 	 @RequestMapping(value = "/loadAllData", method = RequestMethod.GET)
-	 public Result<List<DictModel>> loadAllData(@RequestParam(name="code",required = true) String code) {
+	 public Result<List<DictModel>> loadAllData(@RequestParam(name="code",required = false) String code,
+			 @RequestParam(name="categoryType",required = true) String categoryType) {
+
 		 Result<List<DictModel>> result = new Result<List<DictModel>>();
+		 SysCategory entity = sysCategoryService.queryByCategoryType(categoryType,SysUtils.getLoginUser().getGsdm());
+		 if (entity != null) code = entity.getCode();
+
 		 LambdaQueryWrapper<SysCategory> query = new LambdaQueryWrapper<SysCategory>();
 		 if(oConvertUtils.isNotEmpty(code) && !"0".equals(code)){
+			 query.eq(SysCategory::getGsdm, SysUtils.getLoginUser().getGsdm());
 			 query.likeRight(SysCategory::getCode,code);
 		 }
 		 List<SysCategory> list = this.sysCategoryService.list(query);

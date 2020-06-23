@@ -156,3 +156,13 @@ code: {
         }
       },
 ```
+
+
+#### 五、帐套初始化
+
+> 帐套初始化时，需要更改的地方
+ 
+ - sys_category：商品分类
+>  select * from category_type = 'SPFL' 固定语句
+ 
+ - sys_fill_rule：此表可以完全全copy，不需要添加gsdm 
