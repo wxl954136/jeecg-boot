@@ -40,6 +40,7 @@ import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.utils.SysStatusEnum;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -597,12 +598,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public String getDepartIdsByOrgCode(String orgCode) {
-		return departMapper.queryDepartIdByOrgCode(orgCode);
+		return departMapper.queryDepartIdByOrgCode(orgCode,SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override
 	public DictModel getParentDepartId(String departId) {
-		SysDepart depart = departMapper.getParentDepartId(departId);
+		SysDepart depart = departMapper.getParentDepartId(departId, SysUtils.getLoginUser().getGsdm());
 		DictModel model = new DictModel(depart.getId(),depart.getParentId());
 		return model;
 	}

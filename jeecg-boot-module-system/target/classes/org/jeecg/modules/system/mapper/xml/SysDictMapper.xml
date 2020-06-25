@@ -90,6 +90,7 @@
 			   ${pidField} as parentId
 			   from ${table}
 			   where
+
 			   <choose>
 				   <when test="pid != null and pid != ''">
 					   ${pidField} = #{pid}
@@ -103,6 +104,8 @@
 				   	and ${key} = #{value}
 				   </foreach>
 			   </if>
+			   and gsdm = #{gsdm}
+
 	</select>
 
 

@@ -22,7 +22,12 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	/**
 	 * 根据用户ID查询部门集合
 	 */
-	public List<SysDepart> queryUserDeparts(@Param("userId") String userId);
+	public List<SysDepart> queryUserDeparts(@Param("userId") String userId,@Param("gsdm") String gsdm);
+
+    /**
+     * 根据用户ID查询部门集合
+     */
+    public List<SysDepart> queryUserByDeparts(@Param("userId") String userId);
 
 	/**
 	 * 根据用户名查询部门
@@ -30,26 +35,26 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @param username
 	 * @return
 	 */
-	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
+	public List<SysDepart> queryDepartsByUsername(@Param("username") String username,@Param("gsdm") String gsdm);
 
-	@Select("select id from sys_depart where org_code=#{orgCode}")
-	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
+	@Select("select id from sys_depart where org_code=#{orgCode}  and gsdm = #{gsdm}")
+	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode,@Param("gsdm") String gsdm);
 
-	@Select("select id,parent_id from sys_depart where id=#{departId}")
-	public SysDepart getParentDepartId(@Param("departId") String departId);
+	@Select("select id,parent_id from sys_depart where id=#{departId} and gsdm = #{gsdm} ")
+	public SysDepart getParentDepartId(@Param("departId") String departId,@Param("gsdm") String gsdm);
 
 	/**
 	 *  根据部门Id查询,当前和下级所有部门IDS
 	 * @param departId
 	 * @return
 	 */
-	List<String> getSubDepIdsByDepId(@Param("departId") String departId);
+	List<String> getSubDepIdsByDepId(@Param("departId") String departId,@Param("gsdm") String gsdm);
 
 	/**
 	 * 根据部门编码获取部门下所有IDS
 	 * @param orgCodes
 	 * @return
 	 */
-	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
+	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes,@Param("gsdm") String gsdm);
 
 }

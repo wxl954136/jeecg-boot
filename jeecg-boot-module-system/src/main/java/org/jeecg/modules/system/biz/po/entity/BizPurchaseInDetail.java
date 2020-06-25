@@ -2,13 +2,18 @@ package org.jeecg.modules.system.biz.po.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.modules.system.core.entity.BizFlowSerial;
+import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
+import java.util.List;
+
 import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -89,4 +94,9 @@ public class BizPurchaseInDetail  implements Serializable {
 	@Excel(name = "公司代码", width = 15)
 	@ApiModelProperty(value = "公司代码")
 	private String gsdm;
+
+
+	@Transient
+	@TableField(exist = false)
+	private List<BizFlowSerial> listBizFlowSerial;
 }

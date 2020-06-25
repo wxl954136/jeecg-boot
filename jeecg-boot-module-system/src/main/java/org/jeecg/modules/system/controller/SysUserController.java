@@ -579,7 +579,9 @@ public class SysUserController {
         Result<IPage<SysUser>> result = new Result<IPage<SysUser>>();
         Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
         String roleId = req.getParameter("roleId");
-        String username = req.getParameter("username");
+
+        String username = SysUtils.getUsername(SysUtils.getLoginUser().getGsdm(), req.getParameter("usersign"));
+//        String username = req.getParameter("usersign");
         IPage<SysUser> pageList = sysUserService.getUserByRoleId(page,roleId,username);
         result.setSuccess(true);
         result.setResult(pageList);

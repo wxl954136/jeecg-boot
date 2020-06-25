@@ -14,6 +14,7 @@ import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public List<SysDepartTreeModel> queryTreeList() {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		query.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
@@ -89,6 +91,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public List<DepartIdModel> queryDepartIdTreeList() {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		query.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
@@ -103,10 +106,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	@Transactional
 	public void saveDepartData(SysDepart sysDepart, String username) {
+
 		if (sysDepart != null && username != null) {
 			if (sysDepart.getParentId() == null) {
 				sysDepart.setParentId("");
 			}
+
 			String s = UUID.randomUUID().toString().replace("-", "");
 			sysDepart.setId(s);
 			// 先判断该对象有无父级ID,有则意味着不是最高级,否则意味着是最高级
@@ -115,6 +120,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			//update-begin--Author:baihailong  Date:20191209 for：部门编码规则生成器做成公用配置
 			JSONObject formData = new JSONObject();
 			formData.put("parentId",parentId);
+			formData.put("gsdm",SysUtils.getLoginUser().getGsdm());
+
 			String[] codeArray = (String[]) FillRuleUtil.executeRule(FillRuleConstant.DEPART,formData);
 			//update-end--Author:baihailong  Date:20191209 for：部门编码规则生成器做成公用配置
 			sysDepart.setOrgCode(codeArray[0]);
@@ -149,6 +156,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				// 如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回
 				if (StringUtil.isNullOrEmpty(parentId)) {
 					// 线判断数据库中的表是否为空,空则直接返回初始编码
+					query1.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
 					query1.eq(SysDepart::getParentId, "").or().isNull(SysDepart::getParentId);
 					query1.orderByDesc(SysDepart::getOrgCode);
 					departList = this.list(query1);
@@ -164,6 +172,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 					}
 				} else { // 反之则查询出所有同级的部门,获取结果后有两种情况,有同级和没有同级
 					// 封装查询同级的条件
+					query.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
 					query.eq(SysDepart::getParentId, parentId);
 					// 降序排序
 					query.orderByDesc(SysDepart::getOrgCode);
@@ -256,14 +265,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 	@Override
 	public List<String> getSubDepIdsByDepId(String departId) {
-		return this.baseMapper.getSubDepIdsByDepId(departId);
+		return this.baseMapper.getSubDepIdsByDepId(departId, SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override
 	public List<String> getMySubDepIdsByDepId(String departIds) {
 		//根据部门id获取所负责部门
 		String[] codeArr = this.getMyDeptParentOrgCode(departIds);
-		return this.baseMapper.getSubDepIdsByOrgCodes(codeArr);
+		return this.baseMapper.getSubDepIdsByOrgCodes(codeArr,SysUtils.getLoginUser().getGsdm());
 	}
 
 	/**
@@ -358,12 +367,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 	@Override
 	public List<SysDepart> queryUserDeparts(String userId) {
-		return baseMapper.queryUserDeparts(userId);
+
+		return baseMapper.queryUserByDeparts(userId);
 	}
 
 	@Override
 	public List<SysDepart> queryDepartsByUsername(String username) {
-		return baseMapper.queryDepartsByUsername(username);
+		return baseMapper.queryDepartsByUsername(username,SysUtils.getLoginUser().getGsdm());
 	}
 
 	/**

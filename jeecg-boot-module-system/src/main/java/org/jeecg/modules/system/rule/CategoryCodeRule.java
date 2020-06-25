@@ -23,7 +23,6 @@ public class CategoryCodeRule implements IFillRuleHandler {
 
     @Override
     public Object execute(JSONObject params, JSONObject formData) {
-
         String categoryPid = ROOT_PID_VALUE;
         String categoryCode = null;
         String gsdm = SysUtils.getLoginUser().getGsdm();

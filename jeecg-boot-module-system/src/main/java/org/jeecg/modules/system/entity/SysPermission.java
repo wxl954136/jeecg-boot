@@ -156,6 +156,9 @@ public class SysPermission implements Serializable {
     private boolean internalOrExternal;
 	/*update_end author:wuxianquan date:20190908 for:实体增加字段 */
 
+
+	private String gsdm;
+
     public SysPermission() {
     	
     }

@@ -20,20 +20,26 @@
 		from acc_payable_detail as a
 		inner join acc_payable as b
 		on a.head_id = b.id
+		and a.del_flag = '0'
+		and b.del_flag = '0'
 		inner join sys_trader as x
 		on a.trader_id = x.id
 		left join acc_settle_detail as c
 		on a.id = c.payable_id
 		and c.del_flag = '0'
 		where a.source_amount - ifnull(c.target_amount,0) &lt;&gt; 0
-        and   a.biz_type in
-        <foreach collection="bizTypes" index="index" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-        and a.trader_id in
-		<foreach collection="traderIds" index="index" item="id" open="(" separator="," close=")">
-			#{id}
-		</foreach>
+		<if test="bizTypes!=null  and bizTypes.size()>0">
+			and   a.biz_type in
+			<foreach collection="bizTypes" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+        </if>
+		<if test="traderIds!=null  and traderIds.size()>0">
+			and a.trader_id in
+			<foreach collection="traderIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
 		and a.gsdm = #{gsdm}
 
 		order by b.biz_no asc

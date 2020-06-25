@@ -19,6 +19,7 @@ import org.jeecg.modules.system.model.SysPermissionTree;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.PermissionDataUtil;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,7 @@ public class SysPermissionController {
 		try {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
 			List<SysPermissionTree> treeList = new ArrayList<>();
@@ -89,6 +91,7 @@ public class SysPermissionController {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getMenuType,CommonConstant.MENU_TYPE_0);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
 			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
@@ -117,6 +120,7 @@ public class SysPermissionController {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getParentId,parentId);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
 			List<SysPermissionTree> sysPermissionTreeList = new ArrayList<SysPermissionTree>();
@@ -147,6 +151,7 @@ public class SysPermissionController {
 			List<String> parentIdList = Arrays.asList(parentIds.split(","));
 			query.in(SysPermission::getParentId, parentIdList);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);
 			Map<String, List<SysPermissionTree>> listMap = new HashMap<>();
@@ -221,6 +226,7 @@ public class SysPermissionController {
 			//查询所有的权限
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.eq(SysPermission::getMenuType, CommonConstant.MENU_TYPE_2);
 			//query.eq(SysPermission::getStatus, "1");
 			List<SysPermission> allAuthList = sysPermissionService.list(query);

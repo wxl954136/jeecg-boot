@@ -29,7 +29,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 	/**
 	  *   根据用户查询用户权限
 	 */
-	public List<SysPermission> queryByUser(@Param("username") String username);
+	public List<SysPermission> queryByUser(@Param("username") String username,@Param("gsdm") String gsdm);
 	
 	/**
 	 *   修改菜单状态字段： 是否子节点
@@ -40,8 +40,8 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 	/**
 	  *   获取模糊匹配规则的数据权限URL
 	 */
-	@Select("SELECT url FROM sys_permission WHERE del_flag = 0 and menu_type = 2 and url like '%*%'")
-    public List<String> queryPermissionUrlWithStar();
+	@Select("SELECT url FROM sys_permission WHERE del_flag = 0 and menu_type = 2 and url like '%*%' and gsdm = #{gsdm}" )
+    public List<String> queryPermissionUrlWithStar(@Param("gsdm") String gsdm);
 
 
 	/**

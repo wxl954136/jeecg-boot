@@ -20,6 +20,7 @@ import org.jeecg.modules.system.mapper.SysRolePermissionMapper;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -171,6 +172,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 		sysPermission.setCreateTime(new Date());
 		sysPermission.setDelFlag(0);
 		sysPermission.setLeaf(true);
+		sysPermission.setGsdm(SysUtils.getLoginUser().getGsdm());
 		this.save(sysPermission);
 	}
 
@@ -216,7 +218,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
 	@Override
 	public List<SysPermission> queryByUser(String username) {
-		return this.sysPermissionMapper.queryByUser(username);
+		return this.sysPermissionMapper.queryByUser(username,SysUtils.getLoginUser().getGsdm());
 	}
 
 	/**
@@ -238,7 +240,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	@Override
 	@Cacheable(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE)
 	public List<String> queryPermissionUrlWithStar() {
-		return this.baseMapper.queryPermissionUrlWithStar();
+		return this.baseMapper.queryPermissionUrlWithStar(SysUtils.getLoginUser().getGsdm());
 	}
 
 	@Override

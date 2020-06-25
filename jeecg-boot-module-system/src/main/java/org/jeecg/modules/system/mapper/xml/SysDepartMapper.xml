@@ -4,8 +4,11 @@
 
 	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
 	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
+	   and gsdm = #{gsdm}
 	</select>
-
+    <select id="queryUserByDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
+	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
+	</select>
     <!-- 根据username查询所拥有的部门 -->
     <select id="queryDepartsByUsername" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
         SELECT *
@@ -17,18 +20,20 @@
                 SELECT id
                 FROM sys_user
                 WHERE username = #{username}
+                and gsdm = #{gsdm}
             )
         )
+        and gsdm = #{gsdm}
     </select>
 
     <!-- 根据部门Id查询,当前和下级所有部门IDS -->
     <select id="getSubDepIdsByDepId" resultType="java.lang.String">
-		select id from sys_depart where del_flag = '0' and org_code like concat((select org_code from sys_depart where id=#{departId}),'%')
+		select id from sys_depart where del_flag = '0' and  gsdm = #{gsdm} and org_code like concat((select org_code from sys_depart where gsdm = #{gsdm} and id=#{departId}),'%')
 	</select>
 
     <!--根据部门编码获取我的部门下所有部门ids -->
     <select id="getSubDepIdsByOrgCodes" resultType="java.lang.String">
-		select id from sys_depart where del_flag = '0' and
+		select id from sys_depart where del_flag = '0' and gsdm = #{gsdm} and
         <foreach collection="orgCodes" item="item" index="index"  open="(" separator="or" close=")">
             org_code LIKE CONCAT(#{item},'%')
         </foreach>

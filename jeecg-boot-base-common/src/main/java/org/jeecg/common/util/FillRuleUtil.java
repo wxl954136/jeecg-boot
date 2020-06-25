@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -29,13 +30,17 @@ public class FillRuleUtil {
                 // 获取 Service
                 ServiceImpl impl = (ServiceImpl) SpringContextUtils.getBean("sysFillRuleServiceImpl");
                 // 根据 ruleCode 查询出实体
+                System.out.println("x1=====================");
                 QueryWrapper queryWrapper = new QueryWrapper();
                 queryWrapper.eq("rule_code", ruleCode);
+                System.out.println("x2=====================");
                 JSONObject entity = JSON.parseObject(JSON.toJSONString(impl.getOne(queryWrapper)));
+                System.out.println("x2111=====================" + entity.toJSONString());
                 if (entity == null) {
                     log.warn("填值规则：" + ruleCode + " 不存在");
                     return null;
                 }
+
                 // 获取必要的参数
                 String ruleClass = entity.getString("ruleClass");
                 JSONObject params = entity.getJSONObject("ruleParams");
@@ -45,6 +50,8 @@ public class FillRuleUtil {
                 if (formData == null) {
                     formData = new JSONObject();
                 }
+                System.out.println("x5=====================" + params.toJSONString());
+                System.out.println("x6=====================" + formData.toJSONString());
                 // 通过反射执行配置的类里的方法
                 IFillRuleHandler ruleHandler = (IFillRuleHandler) Class.forName(ruleClass).newInstance();
                 return ruleHandler.execute(params, formData);

@@ -23,6 +23,7 @@ import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.SysUserQueryVo;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -181,7 +182,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	public Set<String> getUserPermissionsSet(String username) {
 		Set<String> permissionSet = new HashSet<>();
-		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username, SysUtils.getLoginUser().getGsdm());
 		for (SysPermission po : permissionList) {
 //			// TODO URL规则有问题？
 //			if (oConvertUtils.isNotEmpty(po.getUrl())) {
@@ -212,7 +213,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		
 		//多部门支持in查询
-		List<SysDepart> list = sysDepartMapper.queryUserDeparts(user.getId());
+		List<SysDepart> list = sysDepartMapper.queryUserDeparts(user.getId(),SysUtils.getLoginUser().getGsdm());
 		List<String> sysMultiOrgCode = new ArrayList<String>();
 		if(list==null || list.size()==0) {
 			//当前用户无部门

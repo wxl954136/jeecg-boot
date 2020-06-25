@@ -23,6 +23,7 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysPositionService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -119,6 +120,7 @@ public class SysDepartController {
 		Result<SysDepart> result = new Result<SysDepart>();
 		String username = JwtUtil.getUserNameByToken(request);
 		try {
+			sysDepart.setGsdm(SysUtils.getLoginUser().getGsdm());
 			sysDepart.setCreateBy(username);
 			sysDepartService.saveDepartData(sysDepart, username);
 			//清除部门树内存

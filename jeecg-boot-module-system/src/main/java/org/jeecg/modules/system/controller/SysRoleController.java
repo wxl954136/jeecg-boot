@@ -29,6 +29,7 @@ import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecg.modules.system.service.ISysRolePermissionService;
 import org.jeecg.modules.system.service.ISysRoleService;
+import org.jeecg.modules.utils.SysUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -367,6 +368,7 @@ public class SysRoleController {
 		List<String> ids = new ArrayList<>();
 		try {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			query.eq(SysPermission::getGsdm, SysUtils.getLoginUser().getGsdm());
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);

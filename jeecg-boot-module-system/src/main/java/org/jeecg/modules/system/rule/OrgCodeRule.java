@@ -8,6 +8,7 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.utils.SysUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class OrgCodeRule implements IFillRuleHandler {
 
     @Override
     public Object execute(JSONObject params, JSONObject formData) {
+
         ISysDepartService sysDepartService = (ISysDepartService) SpringContextUtils.getBean("sysDepartServiceImpl");
 
         LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
@@ -49,6 +51,7 @@ public class OrgCodeRule implements IFillRuleHandler {
         //如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回
         if (StringUtil.isNullOrEmpty(parentId)) {
             // 线判断数据库中的表是否为空,空则直接返回初始编码
+            query1.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
             query1.eq(SysDepart::getParentId, "").or().isNull(SysDepart::getParentId);
             query1.orderByDesc(SysDepart::getOrgCode);
             departList = sysDepartService.list(query1);
@@ -65,6 +68,7 @@ public class OrgCodeRule implements IFillRuleHandler {
         } else {//反之则查询出所有同级的部门,获取结果后有两种情况,有同级和没有同级
             // 封装查询同级的条件
             query.eq(SysDepart::getParentId, parentId);
+            query.eq(SysDepart::getGsdm, SysUtils.getLoginUser().getGsdm());
             // 降序排序
             query.orderByDesc(SysDepart::getOrgCode);
             // 查询出同级部门的集合

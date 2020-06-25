@@ -78,5 +78,8 @@ public class SysRole implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-
+    /**
+     * 公司代码
+     */
+    private String gsdm;
 }
