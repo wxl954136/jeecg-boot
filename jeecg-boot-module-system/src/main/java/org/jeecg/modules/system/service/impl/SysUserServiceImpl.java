@@ -66,7 +66,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
     public Result<?> resetPassword(String username, String oldpassword, String newpassword, String confirmpassword) {
-        SysUser user = userMapper.getUserByName(username);
+        SysUser user = userMapper.getUserByName(username, SysUtils.getLoginUser().getGsdm());
         String passwordEncode = PasswordUtil.encrypt(username, oldpassword, user.getSalt());
         if (!user.getPassword().equals(passwordEncode)) {
             return Result.error("旧密码输入错误!");
@@ -116,9 +116,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser gainUserByName(SysUserQueryVo sysUserQueryVo) {
         return userMapper.gainUserByName(sysUserQueryVo);
     }
+
 	@Override
-	public SysUser getUserByName(String username) {
-		return userMapper.getUserByName(username);
+	public SysUser getUserByName(String username,String gsdm) {
+		return userMapper.getUserByName(username,gsdm);
 	}
 
 
@@ -157,7 +158,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	public List<String> getRole(String username) {
-		return sysUserRoleMapper.getRoleByUserName(username);
+		return sysUserRoleMapper.getRoleByUserName(username,SysUtils.getUsernameOfGsdm(username));
 	}
 	
 	/**
@@ -168,7 +169,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	public Set<String> getUserRolesSet(String username) {
 		// 查询用户拥有的角色集合
-		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
+		List<String> roles = sysUserRoleMapper.getRoleByUserName(username,SysUtils.getUsernameOfGsdm(username));
 		log.info("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
@@ -205,7 +206,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //		info.setSysUserName(user.getRealname());
 		
 
-		LoginUser user = sysBaseAPI.getUserByName(username);
+		LoginUser user = sysBaseAPI.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 		if(user!=null) {
 			info.setSysUserCode(user.getUsername());
 			info.setSysUserName(user.getRealname());

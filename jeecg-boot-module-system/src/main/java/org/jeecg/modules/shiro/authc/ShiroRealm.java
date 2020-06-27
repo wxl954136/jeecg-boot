@@ -10,6 +10,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
@@ -19,6 +20,7 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -92,6 +94,8 @@ public class ShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+//		MyUsernamePasswordToken mytoken = (MyUsernamePasswordToken) auth;
+
 		String token = (String) auth.getCredentials();
 		if (token == null) {
 			log.info("————————身份认证失败——————————IP地址:  "+ oConvertUtils.getIpAddrByRequest(SpringContextUtils.getHttpServletRequest()));
@@ -110,13 +114,15 @@ public class ShiroRealm extends AuthorizingRealm {
 	public LoginUser checkUserTokenIsEffect(String token) throws AuthenticationException {
 		// 解密获得username，用于和数据库进行对比
 		String username = JwtUtil.getUsername(token);
+
 		if (username == null) {
 			throw new AuthenticationException("token非法无效!");
 		}
 
 		// 查询用户信息
 		log.debug("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
-        LoginUser loginUser = sysBaseAPI.getUserByName(username);
+
+        LoginUser loginUser = sysBaseAPI.getUserByName(username,SysUtils.getUsernameOfGsdm(username));
 		if (loginUser == null) {
 			throw new AuthenticationException("用户不存在!");
 		}

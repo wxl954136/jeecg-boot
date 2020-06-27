@@ -17,6 +17,7 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -120,7 +121,8 @@ public class ThirdLoginController {
 		String username = JwtUtil.getUsername(token);
 		
 		//1. 校验用户是否有效
-		SysUser sysUser = sysUserService.getUserByName(username);
+
+		SysUser sysUser = sysUserService.getUserByName(username, SysUtils.getLoginUser().getGsdm());
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;

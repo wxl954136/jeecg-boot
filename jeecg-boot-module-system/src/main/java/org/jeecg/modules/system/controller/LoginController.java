@@ -68,14 +68,14 @@ public class LoginController {
 		String gsdm = sysLoginModel.getGsdm();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
-		if (!username.toLowerCase().equalsIgnoreCase("admin"))  //临时，正式时删除
+		//if (!username.toLowerCase().equalsIgnoreCase("admin"))  //临时，正式时删除
 		username = SysUtils.getUsername(gsdm,username); //把username转成唯一带公司代码的
-
 
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 		//前端密码加密，后端进行密码解密
 		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
 		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
+
 
 		//update-begin-author:taoyan date:20190828 for:校验验证码
         String captcha = sysLoginModel.getCaptcha();
@@ -83,7 +83,6 @@ public class LoginController {
             result.error500("验证码无效");
             return result;
         }
-
         String lowerCaseCaptcha = captcha.toLowerCase();
 		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
 		Object checkCode = redisUtil.get(realKey);
@@ -91,13 +90,11 @@ public class LoginController {
 			result.error500("验证码错误");
 			return result;
 		}
-
 		//update-end-author:taoyan date:20190828 for:校验验证码
 
 		//1. 校验用户是否有效
 
-		SysUser sysUser = sysUserService.getUserByName(username);
-
+		SysUser sysUser = sysUserService.getUserByName(username,gsdm);
 		//设定系统级成本模式，刚帐套时指定
 
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -107,18 +104,21 @@ public class LoginController {
 
 		//2. 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
+		log.info("username:=================" + username);
+
+
+
 		String syspassword = sysUser.getPassword();
 
-		if (username.toLowerCase().equalsIgnoreCase("admin"))
-		{
-			syspassword = "504229cefc95c034f0994c5ae3444259";
-			userpassword = "504229cefc95c034f0994c5ae3444259";
-		}
+//		if (username.toLowerCase().equalsIgnoreCase("admin"))
+//		{
+//			syspassword = "504229cefc95c034f0994c5ae3444259";
+//			userpassword = "504229cefc95c034f0994c5ae3444259";
+//		}
 		if (!syspassword.equals(userpassword)) {
 			result.error500("用户名或密码错误");
 			return result;
 		}
-
 		//用户登录信息
 		sysUser.setCostSystemType(SysStatusEnum.COST_SYS_DAYEND.getValue());
 		userInfo(sysUser, result);
@@ -141,7 +141,7 @@ public class LoginController {
 	    	return Result.error("退出登录失败！");
 	    }
 	    String username = JwtUtil.getUsername(token);
-		LoginUser sysUser = sysBaseAPI.getUserByName(username);
+		LoginUser sysUser = sysBaseAPI.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 	    if(sysUser!=null) {
 	    	sysBaseAPI.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null);
 	    	log.info(" 用户名:  "+sysUser.getRealname()+",退出成功！ ");
@@ -227,7 +227,7 @@ public class LoginController {
 		}
 		String orgCode= user.getOrgCode();
 		this.sysUserService.updateUserDepart(username, orgCode);
-		SysUser sysUser = sysUserService.getUserByName(username);
+		SysUser sysUser = sysUserService.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 		JSONObject obj = new JSONObject();
 		obj.put("userInfo", sysUser);
 		result.setResult(obj);
@@ -439,9 +439,10 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
+		String gsdm = sysLoginModel.getGsdm();
 		
 		//1. 校验用户是否有效
-		SysUser sysUser = sysUserService.getUserByName(username);
+		SysUser sysUser = sysUserService.getUserByName(username,gsdm);
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;

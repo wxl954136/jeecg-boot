@@ -16,6 +16,7 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -73,7 +74,7 @@ public class CasClientController {
 	        }
 			log.info("-------token----username---"+principal);
 		    //1. 校验用户是否有效
-	  		SysUser sysUser = sysUserService.getUserByName(principal);
+	  		SysUser sysUser = sysUserService.getUserByName(principal, SysUtils.getLoginUser().getGsdm());
 	  		result = sysUserService.checkUserIsEffective(sysUser);
 	  		if(!result.isSuccess()) {
 	  			return result;

@@ -907,7 +907,7 @@ public class SysUserController {
             password = RandomUtil.randomString(8);
         }
 		String email = jsonObject.getString("email");
-		SysUser sysUser1 = sysUserService.getUserByName(username);
+		SysUser sysUser1 = sysUserService.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 		if (sysUser1 != null) {
 			result.setMessage("用户名已注册");
 			result.setSuccess(false);
@@ -978,7 +978,7 @@ public class SysUserController {
 			}
 		}
 		if (oConvertUtils.isNotEmpty(username)) {
-			SysUser user = sysUserService.getUserByName(username);
+			SysUser user = sysUserService.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 			if(user!=null) {
 				map.put("username",user.getUsername());
 				map.put("phone",user.getPhone());
@@ -1076,7 +1076,7 @@ public class SysUserController {
 			log.info(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
 
 			// 根据用户名查询用户信息
-			SysUser sysUser = sysUserService.getUserByName(username);
+			SysUser sysUser = sysUserService.getUserByName(username,SysUtils.getLoginUser().getGsdm());
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("sysUserId", sysUser.getId());
 			map.put("sysUserCode", sysUser.getUsername()); // 当前登录用户登录账号

@@ -222,7 +222,7 @@ public class CoreUtils {
                 CoreCostSku coreCostSku = new CoreCostSku();
 
                 BeanUtils.copyProperties(item,coreCostSku);
-                System.out.println("获取sku**********" +  coreCostSku.getSkuId());
+
                 resultMap.put(coreCostSku.getSkuId(),coreCostSku.getSkuId());//确保实体对象的名称必须为skuId
             }
         }

@@ -40,7 +40,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param username
 	 * @return
 	 */
-	public SysUser getUserByName(@Param("username") String username);
+	public SysUser getUserByName(@Param("username") String username,@Param("gsdm") String gsdm);
 
 	/**
 	 *  根据部门Id查询用户信息

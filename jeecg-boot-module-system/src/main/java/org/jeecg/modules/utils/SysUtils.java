@@ -71,7 +71,7 @@ public class SysUtils {
 
     public static String getUsername(String gsdm,String usersign)
     {
-        return gsdm.trim() + "-#-" + usersign.trim();
+        return gsdm.trim() + ":" + usersign.trim();
     }
 
     /**
@@ -81,7 +81,7 @@ public class SysUtils {
      */
     public static String getUsernameOfGsdm(String username)
     {
-        String arr[]  = username.split("-#-");
+        String arr[]  = username.split(":");
         if (arr.length !=2) return null;
         return arr[0];
     }
@@ -93,7 +93,7 @@ public class SysUtils {
      */
     public static  String getUsernameOfName(String username)
     {
-        String arr[]  = username.split("-#-");
+        String arr[]  = username.split(":");
         if (arr.length !=2) return null;
         return arr[1];
     }

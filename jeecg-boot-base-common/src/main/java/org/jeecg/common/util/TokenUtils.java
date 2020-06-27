@@ -35,6 +35,7 @@ public class TokenUtils {
     /**
      * 验证Token
      */
+    /*
     public static boolean verifyToken(HttpServletRequest request, ISysBaseAPI sysBaseAPI, RedisUtil redisUtil) {
         log.info(" -- url --" + request.getRequestURL());
         String token = getTokenByRequest(request);
@@ -50,7 +51,10 @@ public class TokenUtils {
         }
 
         // 查询用户信息
-        LoginUser user = sysBaseAPI.getUserByName(username);
+        //shiro问题
+        System.out.println("x shiro问题，无法取公司代码==============" );
+        LoginUser user = sysBaseAPI.getUserByName(username,"");
+
         if (user == null) {
             throw new AuthenticationException("用户不存在!");
         }
@@ -64,7 +68,7 @@ public class TokenUtils {
         }
         return true;
     }
-
+*/
     /**
      * 刷新token（保证用户在线操作不掉线）
      * @param token

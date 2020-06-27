@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jeecg.modules.system.core.entity.BizFlowSerial;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
 import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -96,7 +97,9 @@ public class BizPurchaseInDetail  implements Serializable {
 	private String gsdm;
 
 
-	@Transient
+
 	@TableField(exist = false)
-	private List<BizFlowSerial> listBizFlowSerial;
+	private List<BizFlowSerialVo> listBizFlowSerial;
+
+
 }

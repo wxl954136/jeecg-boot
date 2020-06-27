@@ -32,7 +32,7 @@ public interface ISysBaseAPI {
 	 * @param username
 	 * @return
 	 */
-	public LoginUser getUserByName(String username);
+	public LoginUser getUserByName(String username,String gsdm);
 
 	/**
 	  * 根据用户id查询用户信息

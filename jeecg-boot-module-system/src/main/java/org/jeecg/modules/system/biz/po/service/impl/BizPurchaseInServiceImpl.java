@@ -25,6 +25,7 @@ import org.jeecg.modules.system.core.service.IBizFlowSkuService;
 import org.jeecg.modules.system.core.service.ICoreCostSkuService;
 import org.jeecg.modules.system.core.service.ICoreStockSkuService;
 import org.jeecg.modules.system.core.utils.CoreUtils;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
 import org.jeecg.modules.system.mapper.SysCommonMapper;
 import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
@@ -95,12 +96,28 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		/**
 		 * No.1:修改保存，保存头表
 		 */
+
+
+		for (int t = 0 ; t< bizPurchaseInDetailList.size() ; t++){
+			BizPurchaseInDetail item = bizPurchaseInDetailList.get(t);
+			System.out.println("2======================" + item.getListBizFlowSerial() );
+			if (item.getListBizFlowSerial() != null && item.getListBizFlowSerial().size() > 0 ){
+				for (int x = 0 ; x < item.getListBizFlowSerial().size() ; x++){
+					BizFlowSerialVo serial = item.getListBizFlowSerial().get(x);
+					System.out.println(serial.getSerial1() +    "====" + serial.getId());
+				}
+			}
+		}
+		System.out.println("9=====================================================");
+
+
 		//计算成本时，从最小日期单据日期开始算起,因为会影响到成本
 		BizPurchaseIn oldBizPurchaseIn =bizPurchaseInMapper.selectById(bizPurchaseIn.getId());
 		bizPurchaseIn.setGsdm(SysUtils.getLoginUser().getGsdm());
 		bizPurchaseIn.setUpdateCount(SysUtils.getUpdateCount(bizPurchaseIn.getUpdateCount()));
 		bizPurchaseIn.setDelFlag("0"); //默认不删除
 		bizPurchaseInMapper.updateById(bizPurchaseIn);
+
 
 
 

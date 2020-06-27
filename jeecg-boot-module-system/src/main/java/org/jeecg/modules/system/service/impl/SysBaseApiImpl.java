@@ -125,12 +125,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
-	public LoginUser getUserByName(String username) {
+	public LoginUser getUserByName(String username,String gsdm) {
 		if(oConvertUtils.isEmpty(username)) {
 			return null;
 		}
 		LoginUser loginUser = new LoginUser();
-		SysUser sysUser = userMapper.getUserByName(username);
+		SysUser sysUser = userMapper.getUserByName(username,gsdm);
 
 		if(sysUser==null) {
 			return null;
@@ -159,7 +159,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> getRolesByUsername(String username) {
-		return sysUserRoleMapper.getRoleByUserName(username);
+		return sysUserRoleMapper.getRoleByUserName(username, SysUtils.getUsernameOfGsdm(username));
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		String anntId = announcement.getId();
 		for(int i=0;i<userIds.length;i++) {
 			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				SysUser sysUser = userMapper.getUserByName(userIds[i],SysUtils.getLoginUser().getGsdm());
 				if(sysUser==null) {
 					continue;
 				}
@@ -280,7 +280,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		String anntId = announcement.getId();
 		for(int i=0;i<userIds.length;i++) {
 			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				SysUser sysUser = userMapper.getUserByName(userIds[i],SysUtils.getLoginUser().getGsdm());
 				if(sysUser==null) {
 					continue;
 				}
@@ -368,7 +368,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		String anntId = announcement.getId();
 		for(int i=0;i<userIds.length;i++) {
 			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				SysUser sysUser = userMapper.getUserByName(userIds[i],SysUtils.getLoginUser().getGsdm());
 				if(sysUser==null) {
 					continue;
 				}
@@ -426,7 +426,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		String anntId = announcement.getId();
 		for(int i=0;i<userIds.length;i++) {
 			if(oConvertUtils.isNotEmpty(userIds[i])) {
-				SysUser sysUser = userMapper.getUserByName(userIds[i]);
+				SysUser sysUser = userMapper.getUserByName(userIds[i],SysUtils.getLoginUser().getGsdm());
 				if(sysUser==null) {
 					continue;
 				}
@@ -593,7 +593,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> getRoleIdsByUsername(String username) {
-		return sysUserRoleMapper.getRoleIdByUserName(username);
+		return sysUserRoleMapper.getRoleIdByUserName(username,SysUtils.getUsernameOfGsdm(username));
 	}
 
 	@Override

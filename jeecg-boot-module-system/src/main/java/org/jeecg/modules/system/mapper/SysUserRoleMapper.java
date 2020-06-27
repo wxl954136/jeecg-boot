@@ -16,10 +16,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
-	@Select("select role_code from sys_role where id in (select role_id from sys_user_role where user_id = (select id from sys_user where username=#{username}))")
-	List<String> getRoleByUserName(@Param("username") String username);
+	@Select("select role_code from sys_role where id in (select role_id from sys_user_role where user_id = (select id from sys_user where username=#{username} and gsdm = #{gsdm}))")
+	List<String> getRoleByUserName(@Param("username") String username,@Param("gsdm") String gsdm);
 
-	@Select("select id from sys_role where id in (select role_id from sys_user_role where user_id = (select id from sys_user where username=#{username}))")
-	List<String> getRoleIdByUserName(@Param("username") String username);
+	@Select("select id from sys_role where id in (select role_id from sys_user_role where user_id = (select id from sys_user where username=#{username} and gsdm = #{gsdm}))")
+	List<String> getRoleIdByUserName(@Param("username") String username,@Param("gsdm") String gsdm);
 
 }

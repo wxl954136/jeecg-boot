@@ -64,7 +64,7 @@ public interface ISysUserService extends IService<SysUser> {
 	public SysUser gainUserByName(SysUserQueryVo sysUserQueryVo);
 
 
-	public SysUser getUserByName(String username);
+	public SysUser getUserByName(String username,String gsdm);
 
 
 	
