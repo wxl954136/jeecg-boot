@@ -139,7 +139,7 @@ public class BizPurchaseInController {
 			return Result.error("请添加明细");
 		}
 		System.out.println("1===============999====" + bizPurchaseInPage);
-
+		/*
 		List<BizPurchaseInDetail> detail = bizPurchaseInPage.getBizPurchaseInDetailList();
 		for(int i = 0 ; i < detail.size() ; i++){
 			BizPurchaseInDetail item = detail.get(i);
@@ -152,7 +152,7 @@ public class BizPurchaseInController {
 				}
 			}
 		}
-
+		*/
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
 		BizPurchaseIn bizPurchaseInEntity = bizPurchaseInService.getById(bizPurchaseIn.getId());
