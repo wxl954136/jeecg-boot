@@ -4,6 +4,7 @@ import java.util.List;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
 
 /**
  * @Description: 采购入库明细表
@@ -16,4 +17,9 @@ public interface BizPurchaseInDetailMapper extends BaseMapper<BizPurchaseInDetai
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
 	public List<BizPurchaseInDetail> selectByMainId(@Param("mainId") String mainId);
+
+
+	public List<BizFlowSerialVo> selectSerialInfoByDetailId(@Param("listDetailIds") List<String> listDetailIds,@Param("gsdm") String gsdm);
+
+
 }

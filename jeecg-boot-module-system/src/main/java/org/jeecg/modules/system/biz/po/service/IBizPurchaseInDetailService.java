@@ -2,6 +2,8 @@ package org.jeecg.modules.system.biz.po.service;
 
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
+
 import java.util.List;
 
 /**
@@ -13,4 +15,11 @@ import java.util.List;
 public interface IBizPurchaseInDetailService extends IService<BizPurchaseInDetail> {
 
 	public List<BizPurchaseInDetail> selectByMainId(String mainId);
+
+	/**
+	 * 通过detailId 获取串号信息
+	 * @param listDetailIds
+	 * @return
+	 */
+	public List<BizFlowSerialVo> selectSerialInfoByDetailId(List<String> listDetailIds);
 }

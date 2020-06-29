@@ -2,16 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper">
 
-	<delete id="deleteByMainId" parameterType="java.lang.String">
+    <delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE 
 		FROM  biz_purchase_in_detail 
 		WHERE
 			 head_id = #{mainId} 	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail">
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail">
 		SELECT * 
 		FROM  biz_purchase_in_detail
 		WHERE head_id = #{mainId}
 		AND del_flag = '0'
 	</select>
+
+
+    <select id="selectSerialInfoByDetailId" resultType="org.jeecg.modules.system.core.vo.BizFlowSerialVo">
+			select a.id,b.head_id,c.biz_id,
+			b.biz_type,c.biz_date,
+			a.sku_id,x.store_id,
+			b.serial_id,c.serial1,c.serial2,c.serial3,c.qty,a.gsdm ,'0' as del_flag
+			from biz_purchase_in as x
+			inner join biz_purchase_in_detail as a
+			on x.id = a.head_id
+			and x.gsdm = #{gsdm}
+			inner join  biz_flow_serial as b
+			on a.id = b.head_id
+			and a.del_flag = '0'
+			and b.del_flag = '0'
+			inner join biz_serial as c
+			on b.serial_id = c.id
+			and b.del_flag = '0'
+			and b.gsdm = #{gsdm}
+
+			where 1=1
+			<if test="listDetailIds!=null  and listDetailIds.size()>0">
+				and a.id in
+				<foreach collection="listDetailIds" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+
+			order by b.id
+	</select>
+
+
 </mapper>

@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.core.mapper.BizSerialMapper">
-
+    <resultMap id="idSelectInStoreSerials" type="org.jeecg.modules.system.core.entity.BizSerial" >
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="serial1" property="serial1" jdbcType="VARCHAR"/>
+    </resultMap>
+	<select id="selectInStoreSerials" resultMap="idSelectInStoreSerials">
+		select id,serial1 from biz_serial
+		where gsdm = #{gsdm}
+		and qty >= 1
+		<if test="listSerials!=null  and listSerials.size()>0">
+			and serial1 in
+			<foreach collection="listSerials" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		union all
+		select id,serial2 as serial1 from biz_serial
+		where gsdm = #{gsdm}
+		and qty >= 1
+		<if test="listSerials!=null  and listSerials.size()>0">
+			and serial2 in
+			<foreach collection="listSerials" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		union all
+		select id,serial3 as serial1 from biz_serial
+		where gsdm = #{gsdm}
+		and qty >= 1
+		<if test="listSerials!=null  and listSerials.size()>0">
+			and serial3 in
+			<foreach collection="listSerials" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		order by 1
+	</select>
 </mapper>

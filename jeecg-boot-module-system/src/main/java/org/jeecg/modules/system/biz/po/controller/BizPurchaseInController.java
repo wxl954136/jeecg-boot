@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.api.vo.Status;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
 import org.jeecg.modules.system.mapper.SysCommonMapper;
 
 import org.jeecg.modules.utils.SysUtils;
@@ -88,6 +91,7 @@ public class BizPurchaseInController {
 
 		IPage<BizPurchaseIn> pageList = bizPurchaseInService.page(page, queryWrapper);
 
+
 		return Result.ok(pageList);
 	}
 
@@ -117,8 +121,10 @@ public class BizPurchaseInController {
 		//必须要给，否则无法计算库存，入库和退货用同一个组件
 		bizPurchaseIn.setBizType(bizType.toUpperCase().trim());
 
-
-		bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
+		Status status = bizPurchaseInService.saveMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
+		if (!status.getSuccess()){
+			return Result.error(status.getMessage());
+		}
 		return Result.ok("添加成功！");
 	}
 
@@ -138,21 +144,8 @@ public class BizPurchaseInController {
 		{
 			return Result.error("请添加明细");
 		}
-		System.out.println("1===============999====" + bizPurchaseInPage);
-		/*
-		List<BizPurchaseInDetail> detail = bizPurchaseInPage.getBizPurchaseInDetailList();
-		for(int i = 0 ; i < detail.size() ; i++){
-			BizPurchaseInDetail item = detail.get(i);
-			if (item.getListBizFlowSerial() != null && item.getListBizFlowSerial().size() > 0) {
-				for(int k = 0 ; k < item.getListBizFlowSerial().size() ; k++){
-					System.out.println("序列号======" + item.getListBizFlowSerial().get(k).getSerial1()  +
-							"==== " +  item.getListBizFlowSerial().get(k).getHeadId()
 
-							);
-				}
-			}
-		}
-		*/
+
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
 		BizPurchaseIn bizPurchaseInEntity = bizPurchaseInService.getById(bizPurchaseIn.getId());
@@ -221,6 +214,21 @@ public class BizPurchaseInController {
 	@GetMapping(value = "/queryBizPurchaseInDetailByMainId")
 	public Result<?> queryBizPurchaseInDetailListByMainId(@RequestParam(name="id",required=true) String id) {
 		List<BizPurchaseInDetail> bizPurchaseInDetailList = bizPurchaseInDetailService.selectByMainId(id);
+		for(BizPurchaseInDetail detail : bizPurchaseInDetailList){
+			List<String> listBizFlowSerial = new ArrayList<>();
+			listBizFlowSerial.add(detail.getId());
+			List<BizFlowSerialVo> listVo = bizPurchaseInDetailService.selectSerialInfoByDetailId(listBizFlowSerial);
+			for(BizFlowSerialVo entity :listVo )
+			{
+				if (entity != null){
+					String serialConn = entity.getSerial1() +
+							(!StringUtils.isEmpty(entity.getSerial2())?(","+entity.getSerial2()):"") +
+							(!StringUtils.isEmpty(entity.getSerial3())?(","+entity.getSerial3()):"");
+					entity.setSerial1(serialConn);
+				}
+			}
+			detail.setListBizFlowSerial(listVo);
+		}
 		IPage <BizPurchaseInDetail> page = new Page<>();
 		page.setRecords(bizPurchaseInDetailList);
 		page.setTotal(bizPurchaseInDetailList.size());

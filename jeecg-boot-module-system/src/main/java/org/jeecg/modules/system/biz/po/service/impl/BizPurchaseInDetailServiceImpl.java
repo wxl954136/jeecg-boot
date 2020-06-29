@@ -3,6 +3,8 @@ package org.jeecg.modules.system.biz.po.service.impl;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper;
 import org.jeecg.modules.system.biz.po.service.IBizPurchaseInDetailService;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
+import org.jeecg.modules.utils.SysUtils;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,5 +25,11 @@ public class BizPurchaseInDetailServiceImpl extends ServiceImpl<BizPurchaseInDet
 	@Override
 	public List<BizPurchaseInDetail> selectByMainId(String mainId) {
 		return bizPurchaseInDetailMapper.selectByMainId(mainId);
+	}
+
+
+	@Override
+	public List<BizFlowSerialVo> selectSerialInfoByDetailId(List<String> listDetailIds) {
+		return bizPurchaseInDetailMapper.selectSerialInfoByDetailId(listDetailIds, SysUtils.getLoginUser().getGsdm());
 	}
 }

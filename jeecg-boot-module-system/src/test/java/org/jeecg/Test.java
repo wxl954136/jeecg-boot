@@ -4,6 +4,7 @@ package org.jeecg;
 
 
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.modules.utils.SysUtils;
 
 import java.lang.reflect.Field;
@@ -16,22 +17,9 @@ public class Test {
     }
     public static void main(String args[]){
 
-        String x = "name___conatacter";
-        String content = "concat(";
-        String sp[] = x.split("___");
-        content += (sp[0]+",");
-        for (int r = 1; r<sp.length ; r++)
-        {
-            content += ("'[',ifnull(" + sp[r] + ",''),']',");
-        }
-        content+="'')";
-        x= "replace(" + content + ",'[]','') ";
+        String x = UUIDGenerator.generate();
+
         System.out.println(x);
-
-
-        System.out.println(DateUtils.date2Str(new Date(),DateUtils.date_sdf_month.get()));
-
-        System.out.println(DateUtils.str2Date("2020-07",DateUtils.date_sdf_month.get()));
         /*
         Map<String, Demo> map = new TreeMap<>();
 

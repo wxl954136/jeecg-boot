@@ -1,8 +1,12 @@
 package org.jeecg.modules.system.biz.po.service;
 
+import org.apache.ibatis.annotations.Param;
+import org.jeecg.common.api.vo.Status;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseIn;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +23,7 @@ public interface IBizPurchaseInService extends IService<BizPurchaseIn> {
 	 * 添加一对多
 	 * 
 	 */
-	public void saveMain(BizPurchaseIn bizPurchaseIn, List<BizPurchaseInDetail> bizPurchaseInDetailList) ;
+	public Status saveMain(BizPurchaseIn bizPurchaseIn, List<BizPurchaseInDetail> bizPurchaseInDetailList) ;
 	
 	/**
 	 * 修改一对多
@@ -36,5 +40,9 @@ public interface IBizPurchaseInService extends IService<BizPurchaseIn> {
 	 * 批量删除一对多
 	 */
 	public void delBatchMain(Collection<? extends Serializable> idList);
-	
+
+
+
+
+
 }

@@ -43,6 +43,11 @@ public class BizSerial implements Serializable {
 	@Excel(name = "单据类型", width = 15)
     @ApiModelProperty(value = "单据类型")
     private String bizType;
+    /**创建日期*/
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "创建日期")
+    private Date bizDate;
 	/**商品型号*/
 	@Excel(name = "商品型号", width = 15)
     @ApiModelProperty(value = "商品型号")
@@ -63,6 +68,9 @@ public class BizSerial implements Serializable {
 	@Excel(name = "串号3", width = 15)
     @ApiModelProperty(value = "serial3")
     private String serial3;
+    /**数量*/
+    @ApiModelProperty(value = "数量")
+    private Integer qty;
 	/**乐观锁*/
 	@Excel(name = "乐观锁", width = 15)
     @ApiModelProperty(value = "乐观锁")
