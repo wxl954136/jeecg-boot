@@ -2,9 +2,7 @@ package org.jeecg.modules.system.biz.po.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.api.vo.Status;
 import org.jeecg.modules.system.biz.ac.service.IAccSettleService;
 import org.jeecg.modules.system.biz.common.entity.BizCommonDetail;
@@ -13,6 +11,7 @@ import org.jeecg.modules.system.biz.po.entity.BizPurchaseIn;
 import org.jeecg.modules.system.biz.po.entity.BizPurchaseInDetail;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInDetailMapper;
 import org.jeecg.modules.system.biz.po.mapper.BizPurchaseInMapper;
+import org.jeecg.modules.system.biz.po.service.IBizPurchaseInDetailService;
 import org.jeecg.modules.system.biz.po.service.IBizPurchaseInService;
 import org.jeecg.modules.system.core.entity.*;
 import org.jeecg.modules.system.core.mapper.BizFlowSerialMapper;
@@ -24,7 +23,6 @@ import org.jeecg.modules.utils.SysStatusEnum;
 import org.jeecg.modules.utils.SysUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -47,6 +45,9 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 	private BizPurchaseInMapper bizPurchaseInMapper;
 	@Autowired
 	private BizPurchaseInDetailMapper bizPurchaseInDetailMapper;
+
+    @Autowired
+    private IBizPurchaseInDetailService bizPurchaseInDetailService;
 	@Autowired
 	private ICoreStockSkuService coreStockSkuService;
 	@Autowired
@@ -87,6 +88,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		saveUpdateDetail(bizPurchaseIn,null,bizPurchaseInDetailList);
 		//保存综合业务流水
 		saveUpdateBizFlowSku(bizPurchaseIn,null,bizPurchaseInDetailList);
+
 		//保存串号信息
 		Status statusSerial = saveUpdateBizFlowSerial(bizPurchaseIn,bizPurchaseInDetailList,"NEW");
 		if (!statusSerial.getSuccess()){
@@ -114,24 +116,10 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 
 	@Override
 	@Transactional
-	public void updateMain(BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> bizPurchaseInDetailList) {
+	public Status updateMain(BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> bizPurchaseInDetailList) {
 		/**
 		 * No.1:修改保存，保存头表
 		 */
-
-
-		for (int t = 0 ; t< bizPurchaseInDetailList.size() ; t++){
-			BizPurchaseInDetail item = bizPurchaseInDetailList.get(t);
-			System.out.println("2======================" + item.getListBizFlowSerial() );
-			if (item.getListBizFlowSerial() != null && item.getListBizFlowSerial().size() > 0 ){
-				for (int x = 0 ; x < item.getListBizFlowSerial().size() ; x++){
-					BizFlowSerialVo serial = item.getListBizFlowSerial().get(x);
-					System.out.println(serial.getSerial1() +    "====" + serial.getId());
-				}
-			}
-		}
-
-		System.out.println("9=====================================================");
 
 		//计算成本时，从最小日期单据日期开始算起,因为会影响到成本
 		BizPurchaseIn oldBizPurchaseIn =bizPurchaseInMapper.selectById(bizPurchaseIn.getId());
@@ -139,8 +127,6 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		bizPurchaseIn.setUpdateCount(SysUtils.getUpdateCount(bizPurchaseIn.getUpdateCount()));
 		bizPurchaseIn.setDelFlag("0"); //默认不删除
 		bizPurchaseInMapper.updateById(bizPurchaseIn);
-
-
 
 
 		//取旧入库数量
@@ -159,6 +145,13 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		/**
 		 * No.4保存记录至商品串号流水表biz_flow_serial
 		 */
+		//保存串号信息
+		Status statusSerial = saveUpdateBizFlowSerial(bizPurchaseIn,bizPurchaseInDetailList,"UPD");
+		if (!statusSerial.getSuccess()){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return statusSerial;
+		}
+
 		/**
 		 * No.5修改保存，更新至库存
 		 */
@@ -188,7 +181,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 				bizPurchaseIn.getGsdm());
 		log.info("UPD:结束 计算成本");
 
-
+		return new Status(true,"成功");
 
 
 
@@ -372,14 +365,14 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 	public Status saveUpdateBizFlowSerial(BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> bizPurchaseInDetailList,String optType)
 	{
 
-
-		List<String> allSerials = new ArrayList<>();
-		List<BizFlowSerialVo> listAllBizFlowSerialVo = new ArrayList<>();
+		List<String> newAllSerials = new ArrayList<>();
+		List<BizFlowSerialVo> listNewAllBizFlowSerialVo = new ArrayList<>();
 		for (BizPurchaseInDetail detail :bizPurchaseInDetailList ) {
 			List<BizFlowSerialVo> listFlowSerial = detail.getListBizFlowSerial() ;
 			if (null!=listFlowSerial && listFlowSerial.size() > 0){
 				for (BizFlowSerialVo serialVo :listFlowSerial ) {
 					//为bizSerial/bizSerialFlow赋值
+                    //--------------id在前端已经自动产生
 					serialVo.setHeadId(detail.getId());  //bizSerialFlow 取头表的id
 					serialVo.setSerialId(serialVo.getId()); //bizSerialFlow 中的串号id 就是bizSerial.id
 					serialVo.setBizId(detail.getId());  // bizSerial 再进行次强行关联至明细表
@@ -390,50 +383,158 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 					serialVo.setBizType(SysStatusEnum.NOTE_PO_IN.getValue()); // bizSerial
 					serialVo.setQty(1); // bizSerial
 					serialVo.setDelFlag("0"); // bizSerial
-					listAllBizFlowSerialVo.add(serialVo);
-					allSerials.addAll(Arrays.asList(serialVo.getSerial1().split(",")));
+
+                    listNewAllBizFlowSerialVo.add(serialVo);
+                    newAllSerials.addAll(Arrays.asList(serialVo.getSerial().split(",")));
 				}
 			}
 		}
-		if (allSerials != null && allSerials.size() > 0) {
-			List<String> listDups = bizFlowSerialService.getDuplicateSerial(allSerials);
+		//不经过数据库，直接判断串号
+		if (newAllSerials != null && newAllSerials.size() > 0 ) {
+			List<String> listDups = bizFlowSerialService.getDuplicateSerial(newAllSerials);
 			if (listDups!=null && listDups.size() > 0){
 				String value = StringUtils.join(listDups, ",");
 				String result = "串号重复[" + value + "]";
 				return new Status(false,result);
 			}
 		}
-		if (allSerials != null && allSerials.size() > 0) {
-			List<BizSerial>  listBizSerial = bizSerialService.selectCorrectInStoreSerials(allSerials,SysUtils.getLoginUser().getGsdm());
-			if (listBizSerial !=null && listBizSerial.size() > 0){
-				String value = StringUtils.join(listBizSerial, "|");
-				String result = "串号已经在库[" + value + "]";
-				return new Status(false,result);
-			}
+
+		List<BizSerial> listNewBizSerial = new ArrayList<>();  //biz_serial
+        List<BizFlowSerial> listNewBizFlowSerial = new ArrayList<>(); //biz_flow_serial
+        Map<String,List<Object>> newMapTrans = getTransObject(listNewAllBizFlowSerialVo);
+
+        listNewBizSerial = (List<BizSerial>) (Object) newMapTrans.get("BIZSERIAL");
+        listNewBizFlowSerial = (List<BizFlowSerial>) (Object) newMapTrans.get("BIZFLOWSERIAL");
+
+        List<BizSerial> listOldBizSerial = new ArrayList<>();  //biz_serial
+		List<BizFlowSerial> listOldBizFlowSerial = new ArrayList<>(); //biz_flow_serial
+		if(optType.equalsIgnoreCase("UPD")){
+			List<BizFlowSerialVo>  listOldAllBizFlowSerialVo = bizPurchaseInDetailService.selectSerialInfoById(bizPurchaseIn.getId());
+			Map<String,List<Object>> oldMapTrans = getTransObject(listOldAllBizFlowSerialVo);
+			listOldBizSerial = (List<BizSerial>) (Object) oldMapTrans.get("BIZSERIAL");
+			listOldBizFlowSerial = (List<BizFlowSerial>) (Object) oldMapTrans.get("BIZFLOWSERIAL");
 		}
 
 		//如果是采购入库，需要存入biz_serial串号登记表
 		//一定要将新增和修改放开来做，以提升速度
 		if (bizPurchaseIn.getBizType().equalsIgnoreCase(SysStatusEnum.NOTE_PO_IN.getValue()) && optType.equalsIgnoreCase("NEW")){
-			for(BizFlowSerialVo entityVo : listAllBizFlowSerialVo){
-				BizSerial bizSerial = new BizSerial();
-				BeanUtils.copyProperties(entityVo,bizSerial);
-				bizSerial.setUpdateCount(SysUtils.getUpdateCount(bizSerial.getUpdateCount()));
-				bizSerialMapper.insert(bizSerial);
-				BizFlowSerial bizFlowSerial = new BizFlowSerial();
-				BeanUtils.copyProperties(entityVo,bizFlowSerial);
-				bizFlowSerial.setUpdateCount(SysUtils.getUpdateCount(bizFlowSerial.getUpdateCount()));
-				bizFlowSerialMapper.insert(bizFlowSerial);
-			}
-
+		    if (newAllSerials != null && newAllSerials.size() > 0) {
+                //经过数据库判断 是否在库
+				Status status = bizSerialService.izStockBySerials(newAllSerials);
+				if (!status.getSuccess()){
+					return status;
+				}
+            }
 		}
-
-
-
-		//根据数据库判断，串号是否在库
+		//存储数据至biz_flow_serial
+        Map<String, List<Object>> mapTransBizFlowSerialDataList = CoreUtils.getBizAddDeleteUpdateList(
+                (List<Object>) (Object) listOldBizFlowSerial,
+                (List<Object>) (Object) listNewBizFlowSerial
+        );
+        saveUpdateBizFlowSerial2BizFlowSerial(
+        		(List<BizFlowSerial>) (Object) mapTransBizFlowSerialDataList.get("NEW"),
+                (List<BizFlowSerial>) (Object) mapTransBizFlowSerialDataList.get("UPD"),
+                (List<BizFlowSerial>) (Object) mapTransBizFlowSerialDataList.get("DEL")
+        );
+        //存储数据至biz_serial
+        Map<String, List<Object>> mapTransBizSerialDataList = CoreUtils.getBizAddDeleteUpdateList(
+                (List<Object>) (Object) listOldBizSerial,
+                (List<Object>) (Object) listNewBizSerial
+        );
+		//存储数据至biz_flow_serial
+        Status statusByBizSerial = saveUpdateBizFlowSerial2BizSerial(
+        		(List<BizSerial>) (Object) mapTransBizSerialDataList.get("NEW"),
+                (List<BizSerial>) (Object) mapTransBizSerialDataList.get("UPD"),
+                (List<BizSerial>) (Object) mapTransBizSerialDataList.get("DEL")
+        );
+        if (!statusByBizSerial.getSuccess()){
+        	return statusByBizSerial;
+		}
 		return  new Status(true,"成功");
 
 	}
+	public Status saveUpdateBizFlowSerial2BizSerial(List<BizSerial> newList,List<BizSerial> updList,List<BizSerial> delList){
+		//判断串号是否在库
+
+
+        if(delList !=null && delList.size() > 0 ){
+            for(BizSerial entity:delList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+                bizSerialMapper.deleteById(entity.getId());
+            }
+        }
+	    if(newList !=null && newList.size() > 0 ){
+
+            List<String> newAllSerials = new ArrayList<>();
+            for(BizSerial serial:newList){
+                newAllSerials.addAll(Arrays.asList(serial.getSerial().split(",")));
+            }
+            Status status = bizSerialService.izStockBySerials(newAllSerials);
+            if (!status.getSuccess()){
+                return status;
+            }
+
+	        for(BizSerial entity:newList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+				String serials[] = entity.getSerial().split(",");
+				if (serials.length >= 1)  entity.setSerial1(serials[0]);
+				if (serials.length >= 2)  entity.setSerial2(serials[1]);
+				if (serials.length >= 3)  entity.setSerial3(serials[2]);
+	            bizSerialMapper.insert(entity);
+            }
+        }
+		if(updList !=null && updList.size() > 0 ){
+			for(BizSerial entity:updList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+				bizSerialMapper.updateById(entity);
+			}
+		}
+		return  new Status(true,"成功");
+    }
+    public void saveUpdateBizFlowSerial2BizFlowSerial(List<BizFlowSerial> newList,List<BizFlowSerial> updList,List<BizFlowSerial> delList){
+		System.out.println("9999------" + delList.size());
+		if(delList !=null && delList.size() > 0 ){
+			for(BizFlowSerial entity:delList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+				entity.setDelFlag("1");
+				bizFlowSerialMapper.updateById(entity);
+			}
+		}
+		if(newList !=null && newList.size() > 0 ){
+			for(BizFlowSerial entity:newList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+				bizFlowSerialMapper.insert(entity);
+			}
+		}
+		if(updList !=null && updList.size() > 0 ){
+			for(BizFlowSerial entity:updList){
+				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
+				bizFlowSerialMapper.updateById(entity);
+			}
+		}
+
+    }
+	public Map<String,List<Object>> getTransObject(List<BizFlowSerialVo> listVo){
+
+	    Map<String,List<Object>> resultMap = new HashMap<>();
+	    List<BizSerial> listSerial = new ArrayList<>();
+        List<BizFlowSerial> listFlow = new ArrayList<>(); //biz_flow_serial
+        for(BizFlowSerialVo entityVo : listVo){
+            BizSerial bizSerial = new BizSerial();
+            BeanUtils.copyProperties(entityVo,bizSerial);
+            bizSerial.setUpdateCount(SysUtils.getUpdateCount(bizSerial.getUpdateCount()));
+            listSerial.add(bizSerial);
+            BizFlowSerial bizFlowSerial = new BizFlowSerial();
+            BeanUtils.copyProperties(entityVo,bizFlowSerial);
+            bizFlowSerial.setUpdateCount(SysUtils.getUpdateCount(bizFlowSerial.getUpdateCount()));
+            listFlow.add(bizFlowSerial);
+        }
+
+        resultMap.put("BIZSERIAL",(List<Object>) (Object) listSerial);
+        resultMap.put("BIZFLOWSERIAL",(List<Object>) (Object) listFlow);
+
+	    return resultMap;
+    }
 	/**
 	 * 更新财务核算，应收付款模块
 	 * @param bizPurchaseIn

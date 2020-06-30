@@ -139,12 +139,10 @@ public class BizPurchaseInController {
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody BizPurchaseInPage bizPurchaseInPage) {
 
-
 		if (bizPurchaseInPage.getBizPurchaseInDetailList().size()<=0)
 		{
 			return Result.error("请添加明细");
 		}
-
 
 		BizPurchaseIn bizPurchaseIn = new BizPurchaseIn();
 		BeanUtils.copyProperties(bizPurchaseInPage, bizPurchaseIn);
@@ -152,7 +150,11 @@ public class BizPurchaseInController {
 		if(bizPurchaseInEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-		bizPurchaseInService.updateMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
+        Status status  = bizPurchaseInService.updateMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
+
+        if (!status.getSuccess()){
+            return Result.error(status.getMessage());
+        }
 
 		return Result.ok("编辑成功!");
 	}

@@ -57,6 +57,10 @@ public class BizSerial implements Serializable {
     @ApiModelProperty(value = "仓库")
     private String storeId;
 
+    @Excel(name = "串号", width = 15)
+    @ApiModelProperty(value = "串号")
+    private String serial;
+
 	@Excel(name = "串号(1)", width = 15)
     @ApiModelProperty(value = "串号(1)")
     private String serial1;

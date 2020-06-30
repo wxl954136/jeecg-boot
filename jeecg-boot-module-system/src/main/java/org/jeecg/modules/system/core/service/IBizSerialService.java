@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.core.service;
 
+import org.jeecg.common.api.vo.Status;
 import org.jeecg.modules.system.core.entity.BizSerial;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -28,5 +29,14 @@ public interface IBizSerialService extends IService<BizSerial> {
      * @return
      */
     List<BizSerial> selectCorrectInStoreSerials(List<String> listSerials , String gsdm);
+
+    List<BizSerial> selectBizSerialByPurchaseInDetailId(String bizId);
+
+    /**
+     * 判断 串号是否在库
+     * @param serials
+     * @return
+     */
+    Status izStockBySerials(List<String> serials);
 
 }

@@ -14,12 +14,15 @@ import org.jeecg.modules.system.core.vo.BizFlowSerialVo;
  */
 public interface BizPurchaseInDetailMapper extends BaseMapper<BizPurchaseInDetail> {
 
-	public boolean deleteByMainId(@Param("mainId") String mainId);
+	boolean deleteByMainId(@Param("mainId") String mainId);
     
-	public List<BizPurchaseInDetail> selectByMainId(@Param("mainId") String mainId);
+	List<BizPurchaseInDetail> selectByMainId(@Param("mainId") String mainId);
 
 
-	public List<BizFlowSerialVo> selectSerialInfoByDetailId(@Param("listDetailIds") List<String> listDetailIds,@Param("gsdm") String gsdm);
+	List<BizFlowSerialVo> selectSerialInfoByDetailId(@Param("listDetailIds") List<String> listDetailIds, @Param("gsdm") String gsdm);
 
+
+
+	List<BizFlowSerialVo> selectSerialInfoById(@Param("bizId") String bizId, @Param("gsdm") String gsdm);
 
 }

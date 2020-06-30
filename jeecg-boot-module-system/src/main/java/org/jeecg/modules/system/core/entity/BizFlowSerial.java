@@ -72,7 +72,7 @@ public class BizFlowSerial implements Serializable {
     @ApiModelProperty(value = "公司代码")
     private String gsdm;
 	/**delFlag*/
-	@Excel(name = "delFlag", width = 15)
+
     @ApiModelProperty(value = "delFlag")
     private String delFlag;
 }

@@ -23,6 +23,7 @@ public class BizFlowSerialVo {
 
     private String storeId;
     private String serialId;
+    private String serial;
     private String serial1;
     private String serial2;
     private String serial3;

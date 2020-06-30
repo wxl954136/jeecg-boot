@@ -22,4 +22,6 @@ public interface IBizPurchaseInDetailService extends IService<BizPurchaseInDetai
 	 * @return
 	 */
 	public List<BizFlowSerialVo> selectSerialInfoByDetailId(List<String> listDetailIds);
+
+	public List<BizFlowSerialVo> selectSerialInfoById( String bizId);
 }

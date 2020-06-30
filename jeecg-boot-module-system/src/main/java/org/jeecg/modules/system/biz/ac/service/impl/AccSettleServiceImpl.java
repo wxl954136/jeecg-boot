@@ -207,7 +207,7 @@ public class AccSettleServiceImpl extends ServiceImpl<AccSettleMapper, AccSettle
 				//删除结算单 好像这一步是无用的呢
 				if (accSettleDetailList !=null && accSettleDetailList.size() == 0 ){
 					//因为结算单是一对多，因此删除对头表时，只有一条记录方可以删除
-					accSettleMapper.deleteById(accSettleDetailList.get(0).getHeadId());
+					//accSettleMapper.deleteById(accSettleDetailList.get(0).getHeadId());
 				}
 			}
 		}

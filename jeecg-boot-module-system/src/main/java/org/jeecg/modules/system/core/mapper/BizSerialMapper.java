@@ -13,8 +13,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @Version: V1.0
  */
 public interface BizSerialMapper extends BaseMapper<BizSerial> {
-    List<BizSerial> selectInStoreSerials(List<String> listSerials ,String gsdm);
+    List<BizSerial> selectInStoreSerials(@Param("listSerials") List<String> listSerials ,@Param("gsdm") String gsdm);
 
+
+    List<BizSerial> selectBizSerialByPurchaseInDetailId(@Param("bizId") String bizId,@Param("gsdm") String gsdm);
 //
 //    List<AccPayableSettleBaseDetail> selectPayableAmount(List<String> traderIds,
 //                                                         List<String> bizTypes,

@@ -3,10 +3,10 @@
 <mapper namespace="org.jeecg.modules.system.core.mapper.BizSerialMapper">
     <resultMap id="idSelectInStoreSerials" type="org.jeecg.modules.system.core.entity.BizSerial" >
         <result column="id" property="id" jdbcType="VARCHAR"/>
-        <result column="serial1" property="serial1" jdbcType="VARCHAR"/>
+        <result column="serial" property="serial" jdbcType="VARCHAR"/>
     </resultMap>
 	<select id="selectInStoreSerials" resultMap="idSelectInStoreSerials">
-		select id,serial1 from biz_serial
+		select id,serial1 as serial from biz_serial
 		where gsdm = #{gsdm}
 		and qty >= 1
 		<if test="listSerials!=null  and listSerials.size()>0">
@@ -16,7 +16,7 @@
 			</foreach>
 		</if>
 		union all
-		select id,serial2 as serial1 from biz_serial
+		select id,serial2 as serial from biz_serial
 		where gsdm = #{gsdm}
 		and qty >= 1
 		<if test="listSerials!=null  and listSerials.size()>0">
@@ -26,7 +26,7 @@
 			</foreach>
 		</if>
 		union all
-		select id,serial3 as serial1 from biz_serial
+		select id,serial3 as serial from biz_serial
 		where gsdm = #{gsdm}
 		and qty >= 1
 		<if test="listSerials!=null  and listSerials.size()>0">
@@ -37,4 +37,23 @@
 		</if>
 		order by 1
 	</select>
+
+
+
+
+	<select id="selectBizSerialByPurchaseInDetailId" resultType="org.jeecg.modules.system.core.entity.BizSerial">
+        select d.* from biz_purchase_in as a
+        inner join biz_purchase_in_detail as b
+        on a.id = b.head_id
+        and a.gsdm = #{gsdm}
+        and a.del_flag = '0'
+        and b.del_flag = '0'
+        and a.id = #{bizId}
+        inner join biz_flow_serial as c
+        on b.id = c.head_id
+        and c.del_flag = '0'
+        inner join biz_serial as d
+        on c.serial_id = d.id
+        where a.id = #{bizId}
+    </select>
 </mapper>

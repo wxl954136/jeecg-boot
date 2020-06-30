@@ -29,7 +29,7 @@ public interface IBizPurchaseInService extends IService<BizPurchaseIn> {
 	 * 修改一对多
 	 * 
 	 */
-	public void updateMain(BizPurchaseIn bizPurchaseIn, List<BizPurchaseInDetail> bizPurchaseInDetailList);
+	public Status updateMain(BizPurchaseIn bizPurchaseIn, List<BizPurchaseInDetail> bizPurchaseInDetailList);
 	
 	/**
 	 * 删除一对多
