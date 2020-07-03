@@ -18,7 +18,7 @@
 
 
     <select id="selectSerialInfoByDetailId" resultType="org.jeecg.modules.system.core.vo.BizFlowSerialVo">
-			select a.id,b.head_id,c.biz_id,
+			select b.id,b.head_id,c.biz_id,
 			b.biz_type,c.biz_date,
 			a.sku_id,x.store_id,
 			b.serial_id,c.serial,c.serial1,c.serial2,c.serial3,c.qty,a.gsdm ,'0' as del_flag
@@ -47,7 +47,7 @@
 	</select>
 
 	<select id="selectSerialInfoById" resultType="org.jeecg.modules.system.core.vo.BizFlowSerialVo">
-		select a.id,b.head_id,c.biz_id,
+		select b.id,b.head_id,c.biz_id,
 		b.biz_type,c.biz_date,
 		a.sku_id,x.store_id,
 		b.serial_id,c.serial,c.serial1,c.serial2,c.serial3,c.qty,a.gsdm ,'0' as del_flag

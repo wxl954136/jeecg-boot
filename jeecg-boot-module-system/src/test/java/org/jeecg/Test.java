@@ -3,6 +3,7 @@ package org.jeecg;
 
 
 
+import org.jeecg.common.api.vo.Status;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.modules.utils.SysUtils;
@@ -17,9 +18,12 @@ public class Test {
     }
     public static void main(String args[]){
 
-        String x = UUIDGenerator.generate();
-
-        System.out.println(x);
+        String serials = "a,b,c";
+        String allSerials[] = serials.split(",");
+        List<String> listSerials = Arrays.asList(allSerials);
+        for(String str:listSerials){
+            System.out.println(str);
+        }
         /*
         Map<String, Demo> map = new TreeMap<>();
 

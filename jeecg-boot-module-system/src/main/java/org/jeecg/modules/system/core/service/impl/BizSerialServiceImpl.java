@@ -27,12 +27,11 @@ public class BizSerialServiceImpl extends ServiceImpl<BizSerialMapper, BizSerial
     /**
      * 根据串号获取在库的串号序列，bizserial.id,bizserial.serial1字段可用
      * @param listSerials
-     * @param gsdm
      * @return
      */
     @Override
-    public List<BizSerial> selectInStoreSerials(List<String> listSerials, String gsdm) {
-        return bizSerialMapper.selectInStoreSerials(listSerials,gsdm);
+    public List<BizSerial> selectInStoreSerials(List<String> listSerials) {
+        return bizSerialMapper.selectInStoreSerials(listSerials,SysUtils.getLoginUser().getGsdm());
     }
 
     /**
@@ -42,13 +41,12 @@ public class BizSerialServiceImpl extends ServiceImpl<BizSerialMapper, BizSerial
      * 23456
      * 转换为 -------> 12345,12353,23456
      * @param listSerials   特别注意，如果串号中有逗号，需分开转成行放至变量中
-     * @param gsdm
      * BizSerial : 使用字段为:id,serial
      * @return
      */
     @Override
-    public List<BizSerial> selectCorrectInStoreSerials(List<String> listSerials, String gsdm) {
-        List<BizSerial> listBizSerials = this.selectInStoreSerials(listSerials,gsdm);
+    public List<BizSerial> selectCorrectInStoreSerials(List<String> listSerials) {
+        List<BizSerial> listBizSerials = this.selectInStoreSerials(listSerials);
         Map<String,BizSerial> map = new HashMap<>();
         for(BizSerial serial : listBizSerials){
             if(map.containsKey(serial.getId())){
@@ -82,17 +80,17 @@ public class BizSerialServiceImpl extends ServiceImpl<BizSerialMapper, BizSerial
      */
     @Override
     public Status izStockBySerials(List<String> serials) {
-        List<BizSerial>  listBizSerial = this.selectCorrectInStoreSerials(serials,SysUtils.getLoginUser().getGsdm());
+        List<BizSerial>  listBizSerial = this.selectCorrectInStoreSerials(serials);
         if (listBizSerial !=null && listBizSerial.size() > 0){
-            List<String> listResult = new ArrayList<>();
+            List<Object> listResult = new ArrayList<>();
             for(BizSerial serial: listBizSerial)
             {
                 listResult.add(serial.getSerial());
             }
             String value = StringUtils.join(listResult, "|");
             String result = "串号已经在库[" + value + "]";
-            return new Status(false,result);
+            return new Status(false,result,listResult);
         }
-        return new Status(true,"成功");
+        return new Status(true,"成功[izStockBySerials]");
     }
 }

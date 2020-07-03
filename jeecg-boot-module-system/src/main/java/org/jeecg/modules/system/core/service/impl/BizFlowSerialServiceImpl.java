@@ -1,5 +1,7 @@
 package org.jeecg.modules.system.core.service.impl;
 
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.api.vo.Status;
 import org.jeecg.modules.system.core.entity.BizFlowSerial;
 import org.jeecg.modules.system.core.mapper.BizFlowSerialMapper;
 import org.jeecg.modules.system.core.service.IBizFlowSerialService;
@@ -25,10 +27,8 @@ public class BizFlowSerialServiceImpl extends ServiceImpl<BizFlowSerialMapper, B
      */
     @Override
     public List<String> getDuplicateSerial(List<String> serials) {
-
         Set<String> set = new HashSet<>();
         Set<String> exist = new HashSet<>();
-
         for (String serial:serials) {
             if (set.contains(serial)) {
                 exist.add(serial);
@@ -39,5 +39,21 @@ public class BizFlowSerialServiceImpl extends ServiceImpl<BizFlowSerialMapper, B
         List<String> listExist = new ArrayList<>(exist);
 
         return listExist;
+    }
+
+    /**
+     * 未经过数据库的统一调用
+     * @param serials
+     * @return
+     */
+    @Override
+    public Status izDuplicateSerial(List<String> serials) {
+        List<String> listDups = this.getDuplicateSerial(serials);
+        if (listDups!=null && listDups.size() > 0){
+            String value = StringUtils.join(listDups, ",");
+            String result = "串号重复[" + value + "]";
+            return new Status(false,result);
+        }
+        return new Status(true,"成功[izDuplicateSerial]");
     }
 }

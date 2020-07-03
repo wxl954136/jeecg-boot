@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.core.service;
 
+import org.jeecg.common.api.vo.Status;
 import org.jeecg.modules.system.core.entity.BizFlowSerial;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,5 +19,8 @@ public interface IBizFlowSerialService extends IService<BizFlowSerial> {
      * @return
      */
     public List<String> getDuplicateSerial(List<String> serials);
+
+
+    public Status izDuplicateSerial(List<String> serials) ;
 
 }

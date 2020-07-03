@@ -35,7 +35,7 @@ public class BizPurchaseInDetailServiceImpl extends ServiceImpl<BizPurchaseInDet
 
 	@Override
 	public List<BizFlowSerialVo> selectSerialInfoById(String bizId) {
-		System.out.println("9x===" );
+
 		return bizPurchaseInDetailMapper.selectSerialInfoById(bizId,SysUtils.getLoginUser().getGsdm());
 	}
 }

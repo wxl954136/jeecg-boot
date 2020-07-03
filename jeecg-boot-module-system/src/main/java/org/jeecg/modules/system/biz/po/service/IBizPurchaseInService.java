@@ -34,7 +34,7 @@ public interface IBizPurchaseInService extends IService<BizPurchaseIn> {
 	/**
 	 * 删除一对多
 	 */
-	public void delMain(String id);
+	public Status delMain(String id);
 	
 	/**
 	 * 批量删除一对多

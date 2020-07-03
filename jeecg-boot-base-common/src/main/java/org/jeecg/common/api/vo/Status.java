@@ -11,6 +11,12 @@ public class Status {
     private String message; //信息提示
     private List<Object> listObject; //特殊对象处理
 
+    public Status(Boolean success, String message, List<Object> listObject) {
+        this.success = success;
+        this.message = message;
+        this.listObject = listObject;
+    }
+
     /**
      *
      * @param success

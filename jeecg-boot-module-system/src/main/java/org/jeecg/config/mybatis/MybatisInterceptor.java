@@ -58,11 +58,25 @@ public class MybatisInterceptor implements Interceptor {
 							if (sysUser != null) {
 								// 登录人账号
 								field.setAccessible(true);
-								field.set(parameter, sysUser.getUsername());
+								field.set(parameter, sysUser.getUsersign());
 								field.setAccessible(false);
 							}
 						}
 					}
+					if ("gsdm".equals(field.getName())) {
+						field.setAccessible(true);
+						Object local_createBy = field.get(parameter);
+						field.setAccessible(false);
+						if (local_createBy == null || local_createBy.equals("")) {
+							if (sysUser != null) {
+								// 登录人账号
+								field.setAccessible(true);
+								field.set(parameter, sysUser.getGsdm());
+								field.setAccessible(false);
+							}
+						}
+					}
+
 					// 注入创建时间
 					if ("createTime".equals(field.getName())) {
 						field.setAccessible(true);
@@ -124,7 +138,7 @@ public class MybatisInterceptor implements Interceptor {
 						if (sysUser != null) {
 							// 登录账号
 							field.setAccessible(true);
-							field.set(parameter, sysUser.getUsername());
+							field.set(parameter, sysUser.getUsersign());
 							field.setAccessible(false);
 						}
 					}

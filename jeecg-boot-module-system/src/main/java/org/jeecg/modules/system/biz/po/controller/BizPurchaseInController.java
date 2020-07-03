@@ -153,6 +153,7 @@ public class BizPurchaseInController {
         Status status  = bizPurchaseInService.updateMain(bizPurchaseIn, bizPurchaseInPage.getBizPurchaseInDetailList());
 
         if (!status.getSuccess()){
+			System.out.println("x1============================");
             return Result.error(status.getMessage());
         }
 
@@ -169,7 +170,10 @@ public class BizPurchaseInController {
 	@ApiOperation(value="采购信息主表-通过id删除", notes="采购信息主表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		bizPurchaseInService.delMain(id);
+		Status status = bizPurchaseInService.delMain(id);
+		if (!status.getSuccess()){
+			return Result.error(status.getMessage());
+		}
 		return Result.ok("删除成功!");
 	}
 

@@ -189,17 +189,22 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 
 	@Override
 	@Transactional
-	public void delMain(String id) {
+	public Status delMain(String id) {
 		List<BizPurchaseInDetail> oldItemList = bizPurchaseInDetailMapper.selectByMainId(id);
 		BizPurchaseIn bizPurchaseIn = bizPurchaseInMapper.selectById(id);
-		bizPurchaseIn.setDelFlag("1"); //一律逻辑删除
 
-		bizPurchaseInMapper.updateById(bizPurchaseIn);
-
-		saveUpdateDetail(bizPurchaseIn,oldItemList,null);
 
 		saveUpdateBizFlowSku(bizPurchaseIn,oldItemList,null);
 
+/**
+ * No.4保存记录至商品串号流水表biz_flow_serial
+ */
+		//保存串号信息
+		Status statusSerial = saveUpdateBizFlowSerial(bizPurchaseIn,oldItemList,"DEL");
+		if (!statusSerial.getSuccess()){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return statusSerial;
+		}
 
 		saveUpdateCostStockSku(bizPurchaseIn,oldItemList,null);
 
@@ -213,6 +218,13 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 		coreCostSkuService.setCalCoreCostSkuBasisMonth(bizPurchaseIn.getBizDate()
 				, skuList, bizPurchaseIn.getBizType(),
 				bizPurchaseIn.getGsdm());
+
+
+		bizPurchaseIn.setDelFlag("1"); //一律逻辑删除 主表一定要放至最后
+		bizPurchaseInMapper.updateById(bizPurchaseIn);
+		saveUpdateDetail(bizPurchaseIn,oldItemList,null);
+
+		return new Status(true,"成功");
 	}
 
 	@Override
@@ -264,7 +276,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 									 List<BizPurchaseInDetail> updTransList,
 									 List<BizPurchaseInDetail> delTransList)
 	{
-		if (newTransList != null && newTransList.size() > 0 )
+		if (null != newTransList   && newTransList.size() > 0 )
 		{
 			for(BizPurchaseInDetail item  :  newTransList)
 			{
@@ -277,7 +289,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 			}
 		}
 
-		if (updTransList != null && updTransList.size() > 0 )
+		if (null != updTransList  && updTransList.size() > 0 )
 		{
 			for(BizPurchaseInDetail item  :  updTransList)
 			{
@@ -285,7 +297,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 				bizPurchaseInDetailMapper.updateById(item);
 			}
 		}
-		if (delTransList != null && delTransList.size() > 0 )
+		if (null != delTransList  && delTransList.size() > 0 )
 		{
 			for(BizPurchaseInDetail item  :  delTransList)
 			{
@@ -383,20 +395,23 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 					serialVo.setBizType(SysStatusEnum.NOTE_PO_IN.getValue()); // bizSerial
 					serialVo.setQty(1); // bizSerial
 					serialVo.setDelFlag("0"); // bizSerial
-
-                    listNewAllBizFlowSerialVo.add(serialVo);
+					listNewAllBizFlowSerialVo.add(serialVo);
                     newAllSerials.addAll(Arrays.asList(serialVo.getSerial().split(",")));
 				}
 			}
 		}
 		//不经过数据库，直接判断串号
-		if (newAllSerials != null && newAllSerials.size() > 0 ) {
-			List<String> listDups = bizFlowSerialService.getDuplicateSerial(newAllSerials);
-			if (listDups!=null && listDups.size() > 0){
-				String value = StringUtils.join(listDups, ",");
-				String result = "串号重复[" + value + "]";
-				return new Status(false,result);
+		if (null != newAllSerials   && newAllSerials.size() > 0 ) {
+			Status status = bizFlowSerialService.izDuplicateSerial(newAllSerials);
+			if (!status.getSuccess()){
+				return status;
 			}
+//			List<String> listDups = bizFlowSerialService.getDuplicateSerial(newAllSerials);
+//			if (listDups!=null && listDups.size() > 0){
+//				String value = StringUtils.join(listDups, ",");
+//				String result = "串号重复[" + value + "]";
+//				return new Status(false,result);
+//			}
 		}
 
 		List<BizSerial> listNewBizSerial = new ArrayList<>();  //biz_serial
@@ -408,17 +423,21 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 
         List<BizSerial> listOldBizSerial = new ArrayList<>();  //biz_serial
 		List<BizFlowSerial> listOldBizFlowSerial = new ArrayList<>(); //biz_flow_serial
-		if(optType.equalsIgnoreCase("UPD")){
-			List<BizFlowSerialVo>  listOldAllBizFlowSerialVo = bizPurchaseInDetailService.selectSerialInfoById(bizPurchaseIn.getId());
-			Map<String,List<Object>> oldMapTrans = getTransObject(listOldAllBizFlowSerialVo);
+		if(optType.equalsIgnoreCase("UPD") || optType.equalsIgnoreCase("DEL") ){
+ 			List<BizFlowSerialVo>  listOldAllBizFlowSerialVo = bizPurchaseInDetailService.selectSerialInfoById(bizPurchaseIn.getId());
+ 			Map<String,List<Object>> oldMapTrans = getTransObject(listOldAllBizFlowSerialVo);
 			listOldBizSerial = (List<BizSerial>) (Object) oldMapTrans.get("BIZSERIAL");
 			listOldBizFlowSerial = (List<BizFlowSerial>) (Object) oldMapTrans.get("BIZFLOWSERIAL");
 		}
-
+		if(optType.equalsIgnoreCase("DEL")) {
+			//删除没有新值，直接空
+			listNewBizSerial = null;
+			listNewBizFlowSerial = null;
+		}
 		//如果是采购入库，需要存入biz_serial串号登记表
 		//一定要将新增和修改放开来做，以提升速度
 		if (bizPurchaseIn.getBizType().equalsIgnoreCase(SysStatusEnum.NOTE_PO_IN.getValue()) && optType.equalsIgnoreCase("NEW")){
-		    if (newAllSerials != null && newAllSerials.size() > 0) {
+		    if (null != newAllSerials   && newAllSerials.size() > 0) {
                 //经过数据库判断 是否在库
 				Status status = bizSerialService.izStockBySerials(newAllSerials);
 				if (!status.getSuccess()){
@@ -450,7 +469,7 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
         if (!statusByBizSerial.getSuccess()){
         	return statusByBizSerial;
 		}
-		return  new Status(true,"成功");
+		return  new Status(true,"成功[001]");
 
 	}
 	public Status saveUpdateBizFlowSerial2BizSerial(List<BizSerial> newList,List<BizSerial> updList,List<BizSerial> delList){
@@ -489,24 +508,24 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 				bizSerialMapper.updateById(entity);
 			}
 		}
-		return  new Status(true,"成功");
+		return  new Status(true,"成功[002]");
     }
     public void saveUpdateBizFlowSerial2BizFlowSerial(List<BizFlowSerial> newList,List<BizFlowSerial> updList,List<BizFlowSerial> delList){
-		System.out.println("9999------" + delList.size());
-		if(delList !=null && delList.size() > 0 ){
+
+		if(null != delList   && delList.size() > 0 ){
 			for(BizFlowSerial entity:delList){
 				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
 				entity.setDelFlag("1");
 				bizFlowSerialMapper.updateById(entity);
 			}
 		}
-		if(newList !=null && newList.size() > 0 ){
+		if(null != newList   && newList.size() > 0 ){
 			for(BizFlowSerial entity:newList){
 				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
 				bizFlowSerialMapper.insert(entity);
 			}
 		}
-		if(updList !=null && updList.size() > 0 ){
+		if(null != updList  && updList.size() > 0 ){
 			for(BizFlowSerial entity:updList){
 				entity.setUpdateCount(SysUtils.getUpdateCount(entity.getUpdateCount()));
 				bizFlowSerialMapper.updateById(entity);
@@ -544,15 +563,15 @@ public class BizPurchaseInServiceImpl extends ServiceImpl<BizPurchaseInMapper, B
 	public boolean saveUpdateTraderAccPayableAndSettle(BizPurchaseIn oldBizPurchaseIn,BizPurchaseIn bizPurchaseIn,List<BizPurchaseInDetail> newList)
 	{
 		BizCommonHead oldBizCommonHead = new BizCommonHead();
-		if (oldBizPurchaseIn!=null)		BeanUtils.copyProperties(oldBizPurchaseIn,oldBizCommonHead);
+		if (null != oldBizPurchaseIn)		BeanUtils.copyProperties(oldBizPurchaseIn,oldBizCommonHead);
 		else oldBizCommonHead = null;
 
 		BizCommonHead newBizCommonHead = new BizCommonHead();
-		if (bizPurchaseIn !=null ) BeanUtils.copyProperties(bizPurchaseIn,newBizCommonHead);
+		if (null != bizPurchaseIn   ) BeanUtils.copyProperties(bizPurchaseIn,newBizCommonHead);
 		else newBizCommonHead = null;
 
 		List<BizCommonDetail> newCommonList = new ArrayList<>();
-		if (newList != null && newList.size() > 0)
+		if (null != newList   && newList.size() > 0)
 		{
 			for(BizPurchaseInDetail entity:newList){
 				BizCommonDetail commonDetail = new BizCommonDetail();

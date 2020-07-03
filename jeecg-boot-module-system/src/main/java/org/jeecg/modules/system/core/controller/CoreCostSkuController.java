@@ -49,7 +49,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCostSkuService> {
 	@Autowired
 	private ICoreCostSkuService coreCostSkuService;
-	
+
 	/**
 	 * 分页列表查询
 	 *
@@ -71,7 +71,7 @@ public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCos
 		IPage<CoreCostSku> pageList = coreCostSkuService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *
@@ -85,7 +85,7 @@ public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCos
 		coreCostSkuService.save(coreCostSku);
 		return Result.ok("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -99,7 +99,7 @@ public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCos
 		coreCostSkuService.updateById(coreCostSku);
 		return Result.ok("编辑成功!");
 	}
-	
+
 	/**
 	 *   通过id删除
 	 *
@@ -113,7 +113,7 @@ public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCos
 		coreCostSkuService.removeById(id);
 		return Result.ok("删除成功!");
 	}
-	
+
 	/**
 	 *  批量删除
 	 *
@@ -127,7 +127,7 @@ public class CoreCostSkuController extends JeecgController<CoreCostSku, ICoreCos
 		this.coreCostSkuService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功!");
 	}
-	
+
 	/**
 	 * 通过id查询
 	 *
